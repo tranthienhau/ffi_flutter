@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:native_add/native_add.dart';
+import 'package:native_add/native_curl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,41 +13,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await NativeAdd.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   String reponse = '';
 
   void curlGet() {
-    reponse = NativeAdd.curlGet("https://api.genderize.io/?name=luc");
-
+    reponse = 'Waiting for reponse';
     setState(() {});
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      reponse = NativeCurl.curlGet("https://api.genderize.io/?name=luc");
+      setState(() {});
+    });
   }
 
   @override
@@ -60,17 +36,41 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: InkWell(
-          onTap: () {
-            curlGet();
-          },
-          child: Column(
-            children: [
-              Center(
-                child: Text('Curl $reponse'),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Text(
+                  'Reponse: $reponse',
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+            Material(
+              color: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  curlGet();
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    'Get data from network with curl',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
