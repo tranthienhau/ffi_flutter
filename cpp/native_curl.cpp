@@ -11,6 +11,7 @@ extern "C" __attribute__((visibility("default"))) __attribute__((used))
 const char* curl_get(const char* url) {
 
     const char *response = "";
+    curl_global_init(CURL_GLOBAL_ALL);
     CURL *curl = curl_easy_init();
 
        if (curl) {
