@@ -5,7 +5,7 @@ import 'package:ffi/ffi.dart';
 
 ///link to native library
 final DynamicLibrary nativeAddLib = Platform.isAndroid
-    ? DynamicLibrary.open("libnative_add.so")
+    ? DynamicLibrary.open("libnative_curl.so")
     : DynamicLibrary.process();
 
 ///link to native function
