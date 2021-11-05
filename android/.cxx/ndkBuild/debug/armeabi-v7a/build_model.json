@@ -1,0 +1,129 @@
+{
+  "abi": "ARMEABI_V7A",
+  "abiPlatformVersion": 16,
+  "buildSettings": {
+    "environmentVariables": []
+  },
+  "cxxBuildFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/ndkBuild/debug/armeabi-v7a",
+  "info": {
+    "abi": "ARMEABI_V7A",
+    "bitness": 32,
+    "deprecated": false,
+    "default": true
+  },
+  "originalCxxBuildFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/ndkBuild/debug/armeabi-v7a",
+  "variant": {
+    "buildSystemArgumentList": [],
+    "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
+    "cFlagsList": [],
+    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
+    "cppFlagsList": [],
+    "isDebuggableEnabled": true,
+    "module": {
+      "buildSystem": "NDK_BUILD",
+      "cmakeToolchainFile": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+      "cxxFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx",
+      "gradleModulePathName": ":native_add",
+      "intermediatesFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates",
+      "makeFile": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Android.mk",
+      "moduleBuildFile": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/build.gradle",
+      "moduleRootFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android",
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkFolder": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462",
+      "ndkMetaAbiList": [
+        {
+          "abi": "ARMEABI_V7A",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "ARM64_V8A",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86_64",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        }
+      ],
+      "ndkMetaPlatforms": {
+        "min": 16,
+        "max": 29,
+        "aliases": {
+          "20": 19,
+          "25": 24,
+          "J": 16,
+          "J-MR1": 17,
+          "J-MR2": 18,
+          "K": 19,
+          "L": 21,
+          "L-MR1": 22,
+          "M": 23,
+          "N": 24,
+          "N-MR1": 24,
+          "O": 26,
+          "O-MR1": 27,
+          "P": 28,
+          "Q": 29
+        }
+      },
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultStl": "SYSTEM",
+      "ndkVersion": "21.1.6352462",
+      "project": {
+        "compilerSettingsCacheFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/android/.cxx",
+        "cxxFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/android/.cxx",
+        "isBuildOnlyTargetAbiEnabled": true,
+        "isCmakeBuildCohabitationEnabled": false,
+        "isNativeCompilerSettingsCacheEnabled": false,
+        "rootBuildGradleFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/android",
+        "sdkFolder": "/Users/sangchauvan/Library/Android/sdk",
+        "isPrefabEnabled": false
+      },
+      "splitsAbiFilterSet": [],
+      "stlSharedObjectMap": {
+        "LIBCXX_SHARED": {
+          "ARMEABI_V7A": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
+          "ARM64_V8A": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
+          "X86": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
+          "X86_64": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
+        },
+        "LIBCXX_STATIC": {},
+        "NONE": {},
+        "SYSTEM": {}
+      }
+    },
+    "objFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/obj/local",
+    "variantName": "debug",
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
+    ],
+    "prefabDirectory": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/ndkBuild/debug/prefab",
+    "prefabPackageDirectoryList": []
+  },
+  "prefabFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/ndkBuild/debug/prefab/armeabi-v7a"
+}

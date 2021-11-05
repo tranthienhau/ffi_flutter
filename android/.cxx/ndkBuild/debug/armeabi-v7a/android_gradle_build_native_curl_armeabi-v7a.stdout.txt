@@ -1,0 +1,2 @@
+[armeabi-v7a] Compile++ thumb: native_curl <= native_curl.cpp
+[armeabi-v7a] SharedLibrary  : libnative_curl.so

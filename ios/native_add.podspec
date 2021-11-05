@@ -11,7 +11,7 @@ A new flutter plugin project.
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Your Company' => 'chauvansang97@gmail.com' }
   s.source           = { :path => '.' }
   s.static_framework = true
   s.platform = :ios, '8.0'
@@ -21,6 +21,7 @@ A new flutter plugin project.
   s.public_header_files = 'Classes/Curl/*.h'
 
   s.vendored_libraries = 'Classes/Framework/libcurl.a'
+  s.public_header_files = '../cpp/native_curl.h'
 #   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386 arm64 x86_64' }
   s.swift_version = '5.0'

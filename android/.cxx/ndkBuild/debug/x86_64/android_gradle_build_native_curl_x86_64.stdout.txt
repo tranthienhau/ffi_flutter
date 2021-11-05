@@ -1,0 +1,2 @@
+[x86_64] Compile++      : native_curl <= native_curl.cpp
+[x86_64] SharedLibrary  : libnative_curl.so

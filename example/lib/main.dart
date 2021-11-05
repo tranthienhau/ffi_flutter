@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:native_add/native_curl.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,13 +24,55 @@ class _MyAppState extends State<MyApp> {
 
   String reponse = '';
 
-  void curlGet() {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> writeCacert() async {
+    final path = await _localPath;
+    ByteData data = await rootBundle.load('assets/cacert.pem');
+    final cacertFile = File('$path/cacert.pem');
+    final buffer = data.buffer;
+
+    await cacertFile.writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+
+    return cacertFile;
+  }
+
+  File? certFile;
+
+  Future<void> curlGet() async {
     reponse = 'Waiting for reponse';
     setState(() {});
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      reponse = NativeCurl.curlGet("https://api.genderize.io/?name=luc");
-      setState(() {});
-    });
+    certFile ??= await writeCacert();
+    if (certFile != null) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        reponse = NativeCurl.curlGet(
+            "https://api.genderize.io/?name=luc", certFile!.path);
+        setState(() {});
+      });
+    }
+  }
+
+  Future<void> testCreateFormData() async {
+    certFile ??= await writeCacert();
+    if (certFile != null) {
+      NativeCurl.uploadFormData(
+        url: 'https://api.kraken.io/v1/upload',
+        certPath: certFile!.path,
+        formData: {
+          'upload': '',
+          'data':
+              "{\"auth\":{\"api_key\": \"42e4ab284ddbc382444d292743c2c861\", "
+                  "\"api_secret\": \"c2ccdf0f9803f25e26f0f98b3de208220d862237\"}, "
+                  "\"wait\":true"
+                  "}",
+        },
+      );
+    }
   }
 
   @override
@@ -57,6 +103,7 @@ class _MyAppState extends State<MyApp> {
               ),
               child: TextButton(
                 onPressed: () {
+                  // testCreateFormData();
                   curlGet();
                 },
                 child: const Padding(

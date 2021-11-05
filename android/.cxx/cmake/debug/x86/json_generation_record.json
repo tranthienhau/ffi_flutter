@@ -1,7 +1,7 @@
 [
   {
     "level": "INFO",
-    "message": "Start JSON generation. Platform version: 16 min SDK version: x86",
+    "message": "Start JSON generation. Platform version: 23 min SDK version: x86",
     "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/CMakeLists.txt",
     "tag": "debug|x86"
   },
