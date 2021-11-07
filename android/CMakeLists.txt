@@ -12,9 +12,6 @@ set_target_properties(libcrypto PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOU
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/curl/${ANDROID_ABI}/include/curl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/openssl/${ANDROID_ABI}/include)
 
-find_library(log-lib log)
-find_library(android-lib android)
-
 add_library(native_curl SHARED ../cpp/native_curl.cpp)
 
 target_include_directories(native_curl PRIVATE

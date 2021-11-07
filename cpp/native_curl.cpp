@@ -3,40 +3,54 @@
 #include "curl.h"
 #include "native_curl.h"
 #include <string>
+#include <cstring>
 #include <iostream>
+#include <vector>
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
+#ifdef __ANDROID__
+#define LOGI(...) \
+  ((void)__android_log_print(ANDROID_LOG_VERBOSE, "native_curl:", __VA_ARGS__))
+#endif
 
 
+struct CurlFormData{
+    std::string name;
+    std::string value;
+    int type;
+};
 
+///write out data from curl perform
 size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
     data->append((char*) ptr, size * nmemb);
     return size * nmemb;
 }
 
-
-struct CurlFormData{
-    const char* name;
-    const char* value;
-    int type;
-};
-
-
+//allocate form data pointer array
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
-struct CurlFormData create_form_data(const char* name,const char* value, int type)
-{
-    struct CurlFormData formData;
-    formData.name = name;
-    formData.value = value;
-    formData.type = type;
-    return formData;
+CurlFormData** allocate_form_data_pointer(int length){
+    CurlFormData **form_data_pointer = new CurlFormData *[length];
+
+    for(int i = 0; i < length; ++i) {
+        form_data_pointer[i] = new CurlFormData();
+    }
+
+    return  form_data_pointer;
+}
+
+///set value for formdata pointer array, call [allocate_form_data_pointer] first
+extern "C" __attribute__((visibility("default"))) __attribute__((used))
+void set_value_formdata_pointer_array(CurlFormData** form_data_pointer, int index, const char* name, const char* value, int type ){
+    form_data_pointer[index]->name = name;
+    form_data_pointer[index]->value = value;
+    form_data_pointer[index]->type = type;
 }
 
 
-
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
-const char* curl_post(const char* url, const char* cert_path, CurlFormData* forms, int formDataLength) {
-    struct curl_httppost* post = NULL;
-    struct curl_httppost* last = NULL;
-    CURLFORMcode formrc;
+const char* curl_post_form_data(const char* url, const char* cert_path, CurlFormData** forms, int length) {
     curl_global_init(CURL_GLOBAL_ALL);
     CURL *curl = curl_easy_init();
     if (curl) {
@@ -44,36 +58,39 @@ const char* curl_post(const char* url, const char* cert_path, CurlFormData* form
            // For https requests, you need to specify the ca-bundle path
            curl_easy_setopt(curl, CURLOPT_CAINFO, cert_path);
        #endif
-       for (CurlFormData* formData = &forms[0]; formData < &forms[formDataLength]; formData++){
-            int type = formData->type;
-            const char* name = formData->name;
-            const char* value = formData->value;
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
 
-            //check type of CurlFormData: 0: text, 1:path of image
+        curl_mime *mime;
+        curl_mimepart *part;
+        mime = curl_mime_init(curl);
+
+       for (int index = 0; index < length; ++index){
+            int type = forms[index]->type;
+            const char* name = forms[index]->name.c_str();
+            const char* value = forms[index]->value.c_str();
+            part = curl_mime_addpart(mime);
+            curl_mime_name(part, name);
+
+            #ifdef __ANDROID__
+            LOGI("curl_formadd: name:%s, value:%s, type:%d", name, value, type);
+            #endif
+
+            //check type of CurlFormData: 0: text, 1:path of file
             switch (type) {
                 case 0:
-    //            long namelength = strlen(name);
-                   formrc = curl_formadd(&post, &last, CURLFORM_COPYNAME, name,
-                              CURLFORM_COPYCONTENTS, value, CURLFORM_END);
-
-    //           curl_formadd(&post, &last, CURLFORM_PTRNAME, name,
-    //                                    CURLFORM_PTRCONTENTS, value, CURLFORM_NAMELENGTH,
-    //                                    namelength, CURLFORM_END);
+                    curl_mime_data(part, value, CURL_ZERO_TERMINATED);
                    break;
                 case 1:
-                   formrc = curl_formadd(&post, &last, CURLFORM_COPYNAME, name,
-                              CURLFORM_FILE,value, CURLFORM_END);
+                    curl_mime_filedata(part, value);
                    break;
             }
 
         }
-
-        curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
-        curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+        ///add multiple part formdata to curl
+        curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
 
         std::string response_string;
         std::string header_string;
@@ -90,17 +107,26 @@ const char* curl_post(const char* url, const char* cert_path, CurlFormData* form
 
         curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-//        curl_formfree(formrc);
+        curl_mime_free(mime);
         curl_global_cleanup();
         curl = NULL;
 
          char * cstr = new char [response_string.length()];
          std::strcpy(cstr, response_string.c_str());
 
-        return cstr;
+        for (int index = 0; index < length; ++index){
+           delete forms[index];
+        }
 
+        delete[] forms;
+        return cstr;
     }
 
+    for (int index = 0; index < length; ++index){
+       delete forms[index];
+    }
+
+    delete[] forms;
     return "Failed to init curl";
 }
 
@@ -152,5 +178,3 @@ const char* curl_get(const char* url, const char* cert_path) {
 
     return response;
 }
-
-
