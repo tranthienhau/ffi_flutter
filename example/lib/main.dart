@@ -72,7 +72,9 @@ class _MyAppState extends State<MyApp> {
     // Pick an image
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     reponse = 'Waiting for reponse';
-
+    _imagePath = null;
+    _imageBytes = null;
+    _imageUrl = null;
     _loading = true;
     setState(() {});
 
@@ -164,51 +166,58 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Center(
-                    child: Text(
-                      'Reponse: $reponse',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Material(
-                  color: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      _uploadImage();
-                      // curlGet();
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Upload file from network with curl',
-                        style: TextStyle(
-                          color: Colors.white,
+            SizedBox(
+              height: double.infinity,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Center(
+                        child: Text(
+                          'Reponse: $reponse',
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    Material(
+                      color: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          _uploadImage();
+                          // curlGet();
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'Upload file from network with curl',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_imageUrl != null) ..._buildDownLoadImage(),
+                    if (_imagePath != null) ..._buildReadImage(),
+                    const SizedBox(height: 10),
+                    if (_imageBytes != null) _buildImage(_imageBytes!),
+                  ],
                 ),
-                if (_imageUrl != null) ..._buildDownLoadImage(),
-                if (_imagePath != null) ..._buildReadImage(),
-                const SizedBox(height: 10),
-                if (_imageBytes != null) _buildImage(_imageBytes!),
-              ],
+              ),
             ),
             if (_loading)
               const Center(
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: Colors.red,
                 ),
               )
           ],
