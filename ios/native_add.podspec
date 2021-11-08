@@ -17,7 +17,7 @@ A new flutter plugin project.
   s.platform = :ios, '8.0'
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-
+  s.dependency 'NSLogger'
   s.public_header_files = 'Classes/Curl/*.h'
 
   s.vendored_libraries = 'Classes/Framework/libcurl.a'

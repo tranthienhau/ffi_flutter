@@ -25,7 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 //    buildToolsVersion "31.0.0"
     ndkVersion "23.0.7599858"
 
@@ -44,7 +44,7 @@ android {
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 31
         externalNativeBuild {
             cmake {
                 arguments '-DANDROID_STL=c++_static'

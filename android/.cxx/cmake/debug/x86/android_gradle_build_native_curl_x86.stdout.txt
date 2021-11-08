@@ -1,2 +1,3 @@
 ninja: Entering directory `/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/x86'
-ninja: no work to do.
+[1/2] Building CXX object CMakeFiles/native_curl.dir/Users/sangchauvan/flutter_ffi/ffi_flutter/cpp/native_curl.cpp.o
+[2/2] Linking CXX shared library /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/cmake/debug/obj/x86/libnative_curl.so

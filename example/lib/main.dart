@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,10 +20,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   final NativeCurl _nativeCurl = NativeCurl();
 
+  String? _imageUrl;
+  Uint8List? _imageBytes;
+  String? _imagePath;
   bool _loading = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,34 +52,35 @@ class _MyAppState extends State<MyApp> {
     return cacertFile;
   }
 
-  File? certFile;
+  File? _certFile;
 
   Future<void> curlGet() async {
     reponse = 'Waiting for reponse';
     setState(() {});
-    certFile ??= await writeCacert();
+    _certFile ??= await writeCacert();
 
-    if (certFile != null) {
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        reponse = _nativeCurl.curlGet(
-            "https://api.genderize.io/?name=luc", certFile!.path);
-        setState(() {});
-      });
+    if (_certFile != null) {
+      final reponseData = await _nativeCurl.get(
+          "https://api.genderize.io/?name=luc", _certFile!.path);
+      reponse = reponseData.data;
+      setState(() {});
     }
   }
 
-  Future<void> testCreateFormData() async {
+  Future<void> _uploadImage() async {
     final ImagePicker _picker = ImagePicker();
     // Pick an image
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     reponse = 'Waiting for reponse';
+
+    _loading = true;
     setState(() {});
-    certFile ??= await writeCacert();
-    if (certFile != null && image != null) {
-      _loading = true;
-      final imageUrl = await _nativeCurl.postFormDataInBackground(
+
+    _certFile ??= await writeCacert();
+    if (_certFile != null && image != null) {
+      final reponseData = await _nativeCurl.postFormData(
           url: 'https://api.kraken.io/v1/upload',
-          certPath: certFile!.path,
+          certPath: _certFile!.path,
           formDataList: [
             FormData(
               type: FormDataType.file,
@@ -91,8 +97,60 @@ class _MyAppState extends State<MyApp> {
               name: 'data',
             ),
           ]);
+
       _loading = false;
-      reponse = imageUrl;
+      reponse = reponseData.data;
+
+      try {
+        final map = json.decode(reponse);
+        if (map is Map) {
+          _imageUrl = map['kraked_url'];
+        }
+      } catch (_) {}
+
+      setState(() {});
+    }
+  }
+
+  Future<void> _downloadImage() async {
+    _loading = true;
+    setState(() {});
+
+    _certFile ??= await writeCacert();
+    final imageUrl = _imageUrl;
+    if (_certFile != null && imageUrl != null) {
+      final path = await _localPath;
+      String fileName = imageUrl.split('/').last;
+      // final fileExtension = fileName.split('.').last;
+      fileName = fileName.replaceAll('-', '_');
+      final reponseData = await _nativeCurl.downloadFile(
+        url: imageUrl,
+        certPath: _certFile!.path,
+        savePath: '$path/$fileName',
+      );
+      final filePath = reponseData.data;
+      if (filePath != '') {
+        _imagePath = filePath;
+      }
+
+      print(reponseData.data);
+      setState(() {});
+      _loading = false;
+    }
+  }
+
+  Future<void> _readFile() async {
+    _loading = true;
+    setState(() {});
+
+    final imagePath = _imagePath;
+
+    if (imagePath != null) {
+      final bytes = await NativeIO.readFile(imagePath);
+      if (bytes != null) {
+        _imageBytes = bytes;
+      }
+      _loading = false;
       setState(() {});
     }
   }
@@ -123,30 +181,121 @@ class _MyAppState extends State<MyApp> {
                 Material(
                   color: Colors.blue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextButton(
                     onPressed: () {
-                      testCreateFormData();
+                      _uploadImage();
                       // curlGet();
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        'Get data from network with curl',
+                        'Upload file from network with curl',
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
                     ),
                   ),
-                )
+                ),
+                if (_imageUrl != null) ..._buildDownLoadImage(),
+                if (_imagePath != null) ..._buildReadImage(),
+                const SizedBox(height: 10),
+                if (_imageBytes != null) _buildImage(_imageBytes!),
               ],
             ),
-            if(_loading)
-              const  Center(child:  CircularProgressIndicator())
+            if (_loading)
+              const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
           ],
         ),
+      ),
+    );
+  }
+
+  List<Widget> _buildDownLoadImage() {
+    return [
+      const SizedBox(height: 10),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: Text(
+            'Image url: $_imageUrl',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+      const SizedBox(height: 10),
+      Material(
+        color: Colors.blue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: TextButton(
+          onPressed: () {
+            _downloadImage();
+          },
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              'Download',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildReadImage() {
+    return [
+      const SizedBox(height: 10),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: Text(
+            'Image path: $_imagePath',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+      const SizedBox(height: 10),
+      Material(
+        color: Colors.blue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: TextButton(
+          onPressed: () {
+            _readFile();
+          },
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              'Read image path',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildImage(Uint8List bytes) {
+    return SizedBox(
+      width: 200,
+      height: 200,
+      child: Image.memory(
+        bytes,
+        fit: BoxFit.cover,
       ),
     );
   }
