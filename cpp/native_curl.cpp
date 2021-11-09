@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
+#include <aws/core/auth/AWSCredentialsProvider.h>
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
@@ -27,6 +28,23 @@ void platform_log(const char *fmt, ...) {
 #endif
     va_end(args);
 }
+
+
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
+//
+/////Callback update progress
+//typedef int32_t (*CallbackFunc)(int32_t n);
+//
+//__attribute__((visibility("default"))) __attribute__((used))
+//void nativeSyncCallback(CallbackFunc callback ) {
+//    std::cout << "NativeSyncCallback callback(9) = " << callback(9) << std::endl; // XCode debug print
+//}
+//
+//#ifdef __cplusplus
+//}
+//#endif
 
 //curl reponse to dart side
 struct CurlResponse{

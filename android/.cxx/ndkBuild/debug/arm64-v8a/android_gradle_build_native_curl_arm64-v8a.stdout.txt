@@ -1,2 +1,0 @@
-[arm64-v8a] Compile++      : native_curl <= native_curl.cpp
-[arm64-v8a] SharedLibrary  : libnative_curl.so

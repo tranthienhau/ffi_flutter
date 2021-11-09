@@ -1,20 +1,20 @@
 [
   {
     "level": "INFO",
-    "message": "Start JSON generation. Platform version: 16 min SDK version: x86_64",
-    "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Android.mk",
+    "message": "Start JSON generation. Platform version: 23 min SDK version: x86_64",
+    "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Application.mk",
     "tag": "debug|x86_64"
   },
   {
     "level": "INFO",
     "message": "JSON \u0027/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/ndkBuild/debug/x86_64/android_gradle_build.json\u0027 was up-to-date",
-    "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Android.mk",
+    "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Application.mk",
     "tag": "debug|x86_64"
   },
   {
     "level": "INFO",
     "message": "JSON generation completed without problems",
-    "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Android.mk",
+    "file": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Application.mk",
     "tag": "debug|x86_64"
   }
 ]

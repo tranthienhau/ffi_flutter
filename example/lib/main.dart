@@ -81,27 +81,30 @@ class _MyAppState extends State<MyApp> {
     _certFile ??= await writeCacert();
     if (_certFile != null && image != null) {
       final reponseData = await _nativeCurl.postFormData(
-          url: 'https://api.kraken.io/v1/upload',
-          certPath: _certFile!.path,
-          formDataList: [
-            FormData(
-              type: FormDataType.file,
-              name: 'upload',
-              value: image.path,
-            ),
-            FormData(
-              type: FormDataType.text,
-              value:
-                  "{\"auth\":{\"api_key\": \"42e4ab284ddbc382444d292743c2c861\", "
-                  "\"api_secret\": \"c2ccdf0f9803f25e26f0f98b3de208220d862237\"}, "
-                  "\"wait\":true"
-                  "}",
-              name: 'data',
-            ),
-          ]);
+        url: 'https://api.kraken.io/v1/upload',
+        certPath: _certFile!.path,
+        formDataList: [
+          FormData(
+            type: FormDataType.file,
+            name: 'upload',
+            value: image.path,
+          ),
+          FormData(
+            type: FormDataType.text,
+            value:
+                "{\"auth\":{\"api_key\": \"42e4ab284ddbc382444d292743c2c861\", "
+                "\"api_secret\": \"c2ccdf0f9803f25e26f0f98b3de208220d862237\"}, "
+                "\"wait\":true"
+                "}",
+            name: 'data',
+          ),
+        ],
+      );
 
-      _loading = false;
-      reponse = reponseData.data;
+      final data = reponseData?.data;
+      if (data != null) {
+        reponse = data;
+      }
 
       try {
         final map = json.decode(reponse);
@@ -109,9 +112,10 @@ class _MyAppState extends State<MyApp> {
           _imageUrl = map['kraked_url'];
         }
       } catch (_) {}
-
-      setState(() {});
     }
+
+    _loading = false;
+    setState(() {});
   }
 
   Future<void> _downloadImage() async {

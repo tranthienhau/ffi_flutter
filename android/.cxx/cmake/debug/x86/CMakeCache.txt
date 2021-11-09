@@ -18,22 +18,22 @@
 ANDROID_ABI:UNINITIALIZED=x86
 
 //No help, variable specified on the command line.
-ANDROID_NDK:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462
+ANDROID_NDK:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670
 
 //No help, variable specified on the command line.
 ANDROID_PLATFORM:UNINITIALIZED=android-23
 
 //No help, variable specified on the command line.
-ANDROID_STL:UNINITIALIZED=c++_static
+ANDROID_TOOLCHAIN:UNINITIALIZED=clang
 
 //No help, variable specified on the command line.
 CMAKE_ANDROID_ARCH_ABI:UNINITIALIZED=x86
 
 //No help, variable specified on the command line.
-CMAKE_ANDROID_NDK:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462
+CMAKE_ANDROID_NDK:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670
 
 //Archiver
-CMAKE_AR:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-ar
+CMAKE_AR:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar
 
 //Flags used by the compiler during all build types.
 CMAKE_ASM_FLAGS:STRING=
@@ -126,7 +126,7 @@ CMAKE_INSTALL_PREFIX:PATH=/usr/local
 CMAKE_LIBRARY_OUTPUT_DIRECTORY:UNINITIALIZED=/Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/cmake/debug/obj/x86
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-ld
+CMAKE_LINKER:FILEPATH=CMAKE_LINKER-NOTFOUND
 
 //No help, variable specified on the command line.
 CMAKE_MAKE_PROGRAM:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
@@ -147,19 +147,19 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_NM:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-nm
+CMAKE_NM:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-nm
 
 //Path to a program.
-CMAKE_OBJCOPY:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-objcopy
+CMAKE_OBJCOPY:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-objcopy
 
 //Path to a program.
-CMAKE_OBJDUMP:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-objdump
+CMAKE_OBJDUMP:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-objdump
 
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=Project
 
 //Ranlib
-CMAKE_RANLIB:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-ranlib
+CMAKE_RANLIB:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib
 
 //Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=
@@ -198,8 +198,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//Path to a program.
-CMAKE_STRIP:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android-strip
+//Strip
+CMAKE_STRIP:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip
 
 //No help, variable specified on the command line.
 CMAKE_SYSTEM_NAME:UNINITIALIZED=Android
@@ -208,7 +208,7 @@ CMAKE_SYSTEM_NAME:UNINITIALIZED=Android
 CMAKE_SYSTEM_VERSION:UNINITIALIZED=23
 
 //No help, variable specified on the command line.
-CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -222,14 +222,8 @@ Project_BINARY_DIR:STATIC=/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cx
 //Value Computed by CMake
 Project_SOURCE_DIR:STATIC=/Users/sangchauvan/flutter_ffi/ffi_flutter/android
 
-//Path to a library.
-android-lib:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/23/libandroid.so
-
-//Path to a library.
-log-lib:FILEPATH=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/23/liblog.so
-
 //Dependencies for the target
-native_curl_LIB_DEPENDS:STATIC=general;/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/23/liblog.so;general;/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/23/libandroid.so;general;android;general;z;general;android;general;libcurl;general;libssl;general;libcrypto;general;log;
+native_curl_LIB_DEPENDS:STATIC=general;z;general;android;general;libcurl;general;libssl;general;libcrypto;general;log;general;libtesting_resources;general;libs2n;general;libaws_crt_cpp;general;libaws_cpp_sdk_sts;general;libaws_cpp_sdk_s3;general;libaws_cpp_sdk_identity_management;general;libaws_cpp_sdk_core;general;libaws_cpp_sdk_cognito_identity;general;libaws_checksumss3;general;libaws_s3;general;libaws_mqtt;general;libaws_io;general;libaws_http;general;libaws_event_stream;general;libaws_compression;general;libaws_common;general;libaws_cal;general;libaws_auth;
 
 
 ########################

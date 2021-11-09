@@ -1,6 +1,6 @@
 {
   "abi": "X86",
-  "abiPlatformVersion": 16,
+  "abiPlatformVersion": 23,
   "buildSettings": {
     "environmentVariables": []
   },
@@ -26,7 +26,7 @@
       "cxxFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx",
       "gradleModulePathName": ":native_add",
       "intermediatesFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates",
-      "makeFile": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Android.mk",
+      "makeFile": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/src/main/cpp/Application.mk",
       "moduleBuildFile": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/build.gradle",
       "moduleRootFolder": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android",
       "ndkDefaultAbiList": [

@@ -1,12 +1,13 @@
 {
   "stringTable": {
     "0": "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/x86",
-    "1": "--target=i686-none-linux-android23 --gcc-toolchain=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Dnative_curl_EXPORTS -I../../../../src/main/cpp/libs/curl/x86/include/curl -I../../../../src/main/cpp/libs/openssl/x86/include -I../../../../src/main/cpp/curl/x86/include -I../../../../src/main/cpp/openssl/x86/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
+    "1": "--target=i686-none-linux-android23 --gcc-toolchain=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Dnative_curl_EXPORTS -I../../../../src/main/cpp/libs/curl/x86/include/curl -I../../../../src/main/cpp/libs/openssl/x86/include -I../../../../../dart_api -I../../../../../dart_api/internal -I../../../../src/main/cpp/curl/x86/include -I../../../../src/main/cpp/openssl/x86/include -I../../../../src/main/aws/x86/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
   },
   "buildFiles": [
     "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/CMakeLists.txt",
-    "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-    "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/build/cmake/platforms.cmake"
+    "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake",
+    "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/platforms.cmake",
+    "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/compiler_id.cmake"
   ],
   "cleanCommands": [
     "/Users/sangchauvan/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/x86\" clean"
@@ -16,27 +17,60 @@
     "native_curl-Debug-x86": {
       "buildCommand": "/Users/sangchauvan/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/x86\" native_curl",
       "buildType": "debug",
-      "toolchain": "1813623994",
+      "toolchain": "712681152",
       "abi": "x86",
       "artifactName": "native_curl",
       "files": [
+        {
+          "src": "/Users/sangchauvan/flutter_ffi/ffi_flutter/dart_api/dart_api_dl.c",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
         {
           "src": "/Users/sangchauvan/flutter_ffi/ffi_flutter/cpp/native_curl.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         }
       ],
-      "headers": [],
+      "headers": [
+        {
+          "header": "/Users/sangchauvan/flutter_ffi/ffi_flutter/cpp/native_curl.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/Users/sangchauvan/flutter_ffi/ffi_flutter/dart_api/dart_api.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/Users/sangchauvan/flutter_ffi/ffi_flutter/dart_api/dart_api_dl.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/Users/sangchauvan/flutter_ffi/ffi_flutter/dart_api/dart_native_api.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/Users/sangchauvan/flutter_ffi/ffi_flutter/dart_api/dart_version.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/Users/sangchauvan/flutter_ffi/ffi_flutter/dart_api/internal/dart_api_dl_impl.h",
+          "workingDirectoryOrdinal": 0
+        }
+      ],
       "output": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/cmake/debug/obj/x86/libnative_curl.so",
       "runtimeFiles": []
     }
   },
   "toolchains": {
-    "1813623994": {
-      "cppCompilerExecutable": "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+    "712681152": {
+      "cCompilerExecutable": "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+      "cppCompilerExecutable": "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
     }
   },
-  "cFileExtensions": [],
+  "cFileExtensions": [
+    "c"
+  ],
   "cppFileExtensions": [
     "cpp"
   ]

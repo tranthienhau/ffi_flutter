@@ -1,8 +1,9 @@
 {
   "buildFiles": [
     "/Users/sangchauvan/flutter_ffi/ffi_flutter/android/CMakeLists.txt",
-    "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-    "/Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/build/cmake/platforms.cmake"
+    "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake",
+    "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/platforms.cmake",
+    "/Users/sangchauvan/Library/Android/sdk/ndk/22.1.7171670/build/cmake/compiler_id.cmake"
   ],
   "cleanCommands": [
     "/Users/sangchauvan/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/arm64-v8a\" clean"

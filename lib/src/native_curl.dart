@@ -116,13 +116,13 @@ class NativeCurl {
   ///Post form data in background using isolate
   ///[url]: url to get data
   ///[certPath]: in Android, you must save certificates.pem and provide [certPath] to access to https
-  Future<CurlResponse> postFormData({
+  Future<CurlResponse?> postFormData({
     required String url,
     required String certPath,
     required List<FormData> formDataList,
   }) async {
     ///await isolate complete
-    Completer<CurlResponse> _resultCompleter = Completer<CurlResponse>();
+    Completer<CurlResponse?> _resultCompleter = Completer<CurlResponse?>();
 
     ///create receiport to get response
     final port = ReceivePort();
@@ -149,8 +149,14 @@ class NativeCurl {
         return;
       }
 
-      ///Complete wait data
-      _resultCompleter.complete(message);
+      if(message is CurlResponse){
+        ///Complete wait data
+        _resultCompleter.complete(message);
+        return;
+      }
+
+      _resultCompleter.complete(null);
+
     });
 
     ///wait for send port return data
