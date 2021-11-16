@@ -1,9 +1,0 @@
-rm -f /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/*
-rm -f /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdbserver
-rm -f /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdb.setup
-mkdir -p /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a
-echo [arm64-v8a] "Gdbserver      ": "[aarch64-linux-android] /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdbserver"
-install -p /Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/prebuilt/android-arm64/gdbserver/gdbserver /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdbserver
-echo [arm64-v8a] "Gdbsetup       ": "/Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdb.setup"
-echo "set solib-search-path /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/obj/local/arm64-v8a" > /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdb.setup
-echo "directory /Users/sangchauvan/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot" >> /Users/sangchauvan/flutter_ffi/ffi_flutter/example/build/native_add/intermediates/ndkBuild/debug/lib/arm64-v8a/gdb.setup

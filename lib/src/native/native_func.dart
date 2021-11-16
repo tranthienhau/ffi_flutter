@@ -57,9 +57,34 @@ final NativeCurlResponse Function(Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>)
         .asFunction();
 
 ///link to [read_file] to read bytes file
-final FileData Function(Pointer<Utf8>)
-readFileNative = nativeCurlLib
-    .lookup<
-    NativeFunction<
-        FileData Function(Pointer<Utf8>)>>("read_file")
+final FileData Function(Pointer<Utf8>) readFileNative = nativeCurlLib
+    .lookup<NativeFunction<FileData Function(Pointer<Utf8>)>>("read_file")
+    .asFunction();
+
+final BucketListData Function(Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>)
+    getBuckets = nativeCurlLib
+        .lookup<
+            NativeFunction<
+                BucketListData Function(Pointer<Utf8>, Pointer<Utf8>,
+                    Pointer<Utf8>)>>("get_buckets")
+        .asFunction();
+
+final void Function(Pointer, int) freeBucketPointer = nativeCurlLib
+    .lookup<NativeFunction<Void Function(Pointer , Int32)>>(
+        "free_char_array")
+    .asFunction();
+
+final Pointer<Utf8> Function(Pointer, int) getItemInCharArray = nativeCurlLib
+    .lookup<NativeFunction<Pointer<Utf8> Function(Pointer, Int32)>>(
+    "get_item_char_array")
+    .asFunction();
+final void Function(Pointer<Utf8>, Pointer<Utf8> ,Pointer<Utf8>,Pointer<Utf8>,Pointer<Utf8>,Pointer<Utf8>) upLoadFileToS3 = nativeCurlLib
+    .lookup<NativeFunction<Void Function(Pointer<Utf8>, Pointer<Utf8> ,Pointer<Utf8>,Pointer<Utf8>,Pointer<Utf8>,Pointer<Utf8>)>>(
+    "upload_file_to_s3")
+    .asFunction();
+
+
+final Pointer<Utf8> Function(Pointer<Utf8>) nativeCompressString = nativeCurlLib
+    .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
+        "compress_string")
     .asFunction();

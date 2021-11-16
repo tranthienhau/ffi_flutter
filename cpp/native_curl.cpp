@@ -11,7 +11,11 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
-#include <aws/core/auth/AWSCredentialsProvider.h>
+#include <iomanip>
+#include <sstream>
+
+#include <zlib.h>
+//#include <aws/core/auth/AWSCredentialsProvider.h>
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
@@ -312,4 +316,52 @@ FileData read_file(const char* file_path) {
     fileData.length = (int) vec.size();
     
     return fileData;
+}
+
+extern "C" __attribute__((visibility("default"))) __attribute__((used))
+const char* compress_string(const char* value){
+    z_stream zs;
+    std::string str(value);
+    platform_log("compress_string: value:%s", value);
+    int compressionlevel = Z_BEST_COMPRESSION;
+    memset(&zs, 0, sizeof(zs));
+
+    if (deflateInit(&zs, compressionlevel) != Z_OK){
+            return "deflateInit failed while compressing.";
+    }
+
+    zs.next_in = (Bytef*)str.data();
+    zs.avail_in = str.size();           // set the z_stream's input
+
+    int ret;
+    char outbuffer[32768];
+    std::string outstring;
+
+    // retrieve the compressed bytes blockwise
+    do {
+        zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+        zs.avail_out = sizeof(outbuffer);
+
+        ret = deflate(&zs, Z_FINISH);
+
+        if (outstring.size() < zs.total_out) {
+            // append the block to the output string
+            outstring.append(outbuffer,
+                             zs.total_out - outstring.size());
+        }
+    } while (ret == Z_OK);
+
+    deflateEnd(&zs);
+
+    if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
+        std::ostringstream oss;
+        oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
+        return oss.str().c_str();
+    }
+
+    char * cstr = new char [strlen(outstring.c_str())];
+    std::strcpy(cstr, outstring.c_str());
+
+    platform_log("compress_string: result:%s", cstr);
+    return cstr;
 }

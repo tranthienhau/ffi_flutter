@@ -18,7 +18,7 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.dependency 'NSLogger'
-  s.public_header_files = 'Classes/Curl/*.h'
+  s.public_header_files = 'Classes/Curl/*.h', 'Classes/Aws/*.h'
 
   s.vendored_libraries = 'Classes/Framework/libcurl.a'
   s.public_header_files = '../cpp/native_curl.h'

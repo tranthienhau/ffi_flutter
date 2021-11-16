@@ -1,2 +1,0 @@
-ninja: Entering directory `/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/x86'
-ninja: no work to do.

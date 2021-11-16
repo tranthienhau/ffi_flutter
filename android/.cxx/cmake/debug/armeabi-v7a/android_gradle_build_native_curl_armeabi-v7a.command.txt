@@ -1,7 +1,0 @@
-Executable : /Users/sangchauvan/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
-arguments : 
--C
-/Users/sangchauvan/flutter_ffi/ffi_flutter/android/.cxx/cmake/debug/armeabi-v7a
-native_curl
-jvmArgs : 
-

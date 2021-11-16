@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -22,9 +21,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final NativeCurl _nativeCurl = NativeCurl();
 
-  String? _imageUrl;
-  Uint8List? _imageBytes;
-  String? _imagePath;
+  List<String> _buckets = [];
+  final NativeAws _nativeAws = NativeAws();
+
+  String? _bucketSelection;
   bool _loading = false;
 
   @override
@@ -54,111 +54,53 @@ class _MyAppState extends State<MyApp> {
 
   File? _certFile;
 
-  Future<void> curlGet() async {
-    reponse = 'Waiting for reponse';
-    setState(() {});
-    _certFile ??= await writeCacert();
-
-    if (_certFile != null) {
-      final reponseData = await _nativeCurl.get(
-          "https://api.genderize.io/?name=luc", _certFile!.path);
-      reponse = reponseData.data;
-      setState(() {});
-    }
-  }
-
-  Future<void> _uploadImage() async {
+  Future<void> _uploadFile() async {
     final ImagePicker _picker = ImagePicker();
     // Pick an image
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
     reponse = 'Waiting for reponse';
-    _imagePath = null;
-    _imageBytes = null;
-    _imageUrl = null;
+
     _loading = true;
     setState(() {});
+    if (image != null && _bucketSelection != null) {
+      final fileName = image.path.split('/').last;
 
-    _certFile ??= await writeCacert();
-    if (_certFile != null && image != null) {
-      final reponseData = await _nativeCurl.postFormData(
-        url: 'https://api.kraken.io/v1/upload',
-        certPath: _certFile!.path,
-        formDataList: [
-          FormData(
-            type: FormDataType.file,
-            name: 'upload',
-            value: image.path,
-          ),
-          FormData(
-            type: FormDataType.text,
-            value:
-                "{\"auth\":{\"api_key\": \"42e4ab284ddbc382444d292743c2c861\", "
-                "\"api_secret\": \"c2ccdf0f9803f25e26f0f98b3de208220d862237\"}, "
-                "\"wait\":true"
-                "}",
-            name: 'data',
-          ),
-        ],
-      );
-
-      final data = reponseData?.data;
-      if (data != null) {
-        reponse = data;
-      }
-
-      try {
-        final map = json.decode(reponse);
-        if (map is Map) {
-          _imageUrl = map['kraked_url'];
-        }
-      } catch (_) {}
+      await _nativeAws.uploadFile(
+          filePath: image.path,
+          fileName: fileName,
+          bucketName: _bucketSelection!);
     }
 
     _loading = false;
     setState(() {});
   }
 
-  Future<void> _downloadImage() async {
+  Future<void> _getBuckets() async {
+    reponse = 'Waiting for reponse';
+
     _loading = true;
     setState(() {});
 
     _certFile ??= await writeCacert();
-    final imageUrl = _imageUrl;
-    if (_certFile != null && imageUrl != null) {
-      final path = await _localPath;
-      String fileName = imageUrl.split('/').last;
-      // final fileExtension = fileName.split('.').last;
-      fileName = fileName.replaceAll('-', '_');
-      final reponseData = await _nativeCurl.downloadFile(
-        url: imageUrl,
-        certPath: _certFile!.path,
-        savePath: '$path/$fileName',
+    _bucketSelection = null;
+
+    String? certPath = _certFile?.path;
+    if (certPath != null) {
+      _nativeAws.init(
+        certPath: certPath,
+        accessKeyId: 'AKIA6O4PXIXCF5TCKN6H',
+        secretKeyId: '1SIFGF+fxo2hY9PmE+efRlNyxMdKmgGMwO67u4cS',
       );
-      final filePath = reponseData.data;
-      if (filePath != '') {
-        _imagePath = filePath;
-      }
-
-      print(reponseData.data);
-      setState(() {});
-      _loading = false;
     }
-  }
 
-  Future<void> _readFile() async {
-    _loading = true;
+    final result = await _nativeAws.getAllBuckets();
+
+    _loading = false;
+    if (result != null) {
+      _buckets = result;
+    }
     setState(() {});
-
-    final imagePath = _imagePath;
-
-    if (imagePath != null) {
-      final bytes = await NativeIO.readFile(imagePath);
-      if (bytes != null) {
-        _imageBytes = bytes;
-      }
-      _loading = false;
-      setState(() {});
-    }
   }
 
   @override
@@ -178,6 +120,7 @@ class _MyAppState extends State<MyApp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
+                    _buildBucketSelection(),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -195,14 +138,11 @@ class _MyAppState extends State<MyApp> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: TextButton(
-                        onPressed: () {
-                          _uploadImage();
-                          // curlGet();
-                        },
+                        onPressed: _getBuckets,
                         child: const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
-                            'Upload file from network with curl',
+                            'Get list buckets',
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -210,10 +150,8 @@ class _MyAppState extends State<MyApp> {
                         ),
                       ),
                     ),
-                    if (_imageUrl != null) ..._buildDownLoadImage(),
-                    if (_imagePath != null) ..._buildReadImage(),
                     const SizedBox(height: 10),
-                    if (_imageBytes != null) _buildImage(_imageBytes!),
+                    if (_bucketSelection != null) _buildUploadImageView()
                   ],
                 ),
               ),
@@ -230,85 +168,57 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  List<Widget> _buildDownLoadImage() {
-    return [
-      const SizedBox(height: 10),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Center(
-          child: Text(
-            'Image url: $_imageUrl',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      const SizedBox(height: 10),
-      Material(
-        color: Colors.blue,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: TextButton(
-          onPressed: () {
-            _downloadImage();
-          },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              'Download',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ];
-  }
-
-  List<Widget> _buildReadImage() {
-    return [
-      const SizedBox(height: 10),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Center(
-          child: Text(
-            'Image path: $_imagePath',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      const SizedBox(height: 10),
-      Material(
-        color: Colors.blue,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: TextButton(
-          onPressed: () {
-            _readFile();
-          },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              'Read image path',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ];
-  }
-
-  Widget _buildImage(Uint8List bytes) {
+  Widget _buildBucketSelection() {
     return SizedBox(
-      width: 200,
-      height: 200,
-      child: Image.memory(
-        bytes,
-        fit: BoxFit.cover,
+      height: 50,
+      child: DropdownButton<String>(
+        value: _bucketSelection,
+        icon: const Icon(Icons.arrow_downward),
+        iconSize: 24,
+        elevation: 16,
+        isExpanded: false,
+        style: const TextStyle(color: Colors.deepPurple),
+        underline: Container(
+          height: 2,
+          color: Colors.deepPurpleAccent,
+        ),
+        onChanged: (String? newValue) {
+          if (newValue != null) {
+            setState(() {
+              _bucketSelection = newValue;
+            });
+          }
+        },
+        items: _buckets.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              // textAlign: TextAlign.center,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildUploadImageView() {
+    return Material(
+      color: Colors.blue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TextButton(
+        onPressed: _uploadFile,
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            'Upload image to bucket',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }
