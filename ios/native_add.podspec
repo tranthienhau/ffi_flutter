@@ -18,11 +18,24 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.dependency 'NSLogger'
-  s.public_header_files = 'Classes/Curl/*.h', 'Classes/Aws/*.h'
+  s.public_header_files = 'Classes/Curl/*.h', '../cpp/general/general_funtion.h'
 
   s.vendored_libraries = 'Classes/Framework/libcurl.a'
-  s.public_header_files = '../cpp/native_curl.h'
-#   # Flutter.framework does not contain a i386 slice.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386 arm64 x86_64' }
+  # Flutter.framework does not contain a i386 slice.
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' 'arm64' 'x86_64' }
   s.swift_version = '5.0'
+  # telling CocoaPods not to remove framework
+  s.preserve_paths = 'opencv2.framework'
+#   s.public_header_files  = 'opencv2.framework/Versions/A/Headers/*.h'
+  # telling linker to include opencv2 framework
+  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework opencv2' }
+
+  # including OpenCV framework
+  s.vendored_frameworks = 'opencv2.framework'
+
+  # including native framework
+  s.frameworks = 'AVFoundation'
+
+#   including C++ library
+  s.library = 'c++'
 end

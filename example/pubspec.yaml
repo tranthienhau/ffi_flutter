@@ -17,8 +17,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path_provider: ^2.0.6
-  native_add:
+
+  native_ffi:
     # When depending on this package from a real application you should use:
     #   native_add: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
@@ -29,7 +29,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  path_provider: ^2.0.6
+  flutter_bloc: ^7.3.3
+  logger: ^1.1.0
   image_picker: ^0.8.4+4
+  photo_view:
+    git:
+      url: https://github.com/chauvansang1997/photo_view.git
+      ref: 1.0.2
+  flutter_spinkit: ^5.0.0 #null safety
+  font_awesome_flutter: ^9.2.0
+  overlay_support: ^1.2.0
 #  permission_handler: ^8.2.6
 
 dev_dependencies:
@@ -56,7 +66,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - cacert.pem
+     - assets/cacert.pem
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

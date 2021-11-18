@@ -1,28 +1,36 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/opencv2/include)
+add_library(lib_opencv SHARED IMPORTED)
+set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/opencv2/libs/${ANDROID_ABI}/libopencv_java4.so)
+
+
 add_library(libcurl STATIC IMPORTED)
-set_target_properties(libcurl PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/curl/${ANDROID_ABI}/lib/libcurl.a)
+set_target_properties(libcurl PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/curl/${ANDROID_ABI}/lib/libcurl.a)
 
 add_library(zlib STATIC IMPORTED)
 set_target_properties(zlib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/zlib/${ANDROID_ABI}/lib/libz.a)
 
 add_library(libssl STATIC IMPORTED)
-set_target_properties(libssl PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/openssl/${ANDROID_ABI}/lib/libssl.a)
+set_target_properties(libssl PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/openssl/${ANDROID_ABI}/lib/libssl.a)
 
 add_library(libcrypto STATIC IMPORTED)
-set_target_properties(libcrypto PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/openssl/${ANDROID_ABI}/lib/libcrypto.a)
+set_target_properties(libcrypto PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/openssl/${ANDROID_ABI}/lib/libcrypto.a)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/curl/${ANDROID_ABI}/include/curl)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/curl/${ANDROID_ABI}/include/curl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/zlib/${ANDROID_ABI}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/libs/openssl/${ANDROID_ABI}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/main/openssl/${ANDROID_ABI}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../dart_api)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../dart_api/internal)
 
-
-add_library(native_curl SHARED
+include_directories(../cpp/general)
+add_library(native_ffi SHARED
             ../cpp/native_curl.cpp
+            ../cpp/native_opencv.cpp
+            ../cpp/general/general_funtion.h
+            ../cpp/general/general_funtion.cpp
             ../cpp/native_aws.cpp
-            ../cpp/native_curl.h
             ../dart_api/dart_api.h
             ../dart_api/dart_api_dl.h
             ../dart_api/dart_native_api.h
@@ -30,9 +38,9 @@ add_library(native_curl SHARED
             ../dart_api/internal/dart_api_dl_impl.h
             ../dart_api/dart_api_dl.c)
 
-target_include_directories(native_curl PRIVATE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/curl/${ANDROID_ABI}/include
-                           ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/openssl/${ANDROID_ABI}/include)
+target_include_directories(native_ffi PRIVATE
+                           ${CMAKE_CURRENT_SOURCE_DIR}/src/main/curl/${ANDROID_ABI}/include
+                           ${CMAKE_CURRENT_SOURCE_DIR}/src/main/openssl/${ANDROID_ABI}/include)
 
 
 #AWS libraries
@@ -93,14 +101,15 @@ set_target_properties(libs2n PROPERTIES IMPORTED_LOCATION ${AWS_LIB}/libs2n.a)
 add_library(libtesting_resources STATIC IMPORTED)
 set_target_properties(libtesting_resources PROPERTIES IMPORTED_LOCATION ${AWS_LIB}/libtesting-resources.a)
 include_directories(${AWS_INCLUDE})
-target_include_directories(native_curl PRIVATE ${AWS_INCLUDE})
+target_include_directories(native_ffi PRIVATE ${AWS_INCLUDE})
 
 
-target_link_libraries(native_curl ${log-lib} ${android-lib})
-target_link_libraries(native_curl
+target_link_libraries(native_ffi ${log-lib} ${android-lib})
+target_link_libraries(native_ffi
                       android
                       z
                       zlib
+                      lib_opencv
                       libcurl
                       libssl
                       libcrypto

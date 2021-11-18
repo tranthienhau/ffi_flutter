@@ -11,7 +11,6 @@
 #include <aws/core/client/ClientConfiguration.h>
 #include <aws/core/auth/AWSCredentialsProvider.h>
 #include <algorithm>    // std::copy
-#include "native_curl.h"
 #include <aws/identity-management/auth/CognitoCachingCredentialsProvider.h>
 #include <aws/s3/S3Client.h>
 #include <aws/s3/model/Bucket.h>
@@ -21,15 +20,15 @@
 #include <aws/s3/model/GetObjectRequest.h>
 #include <memory>
 #include <fstream>
+#include "general_funtion.h"
 
 #if __ANDROID__
-
 #include <android/log.h>
 #include <jni.h>
 #include <aws/core/platform/Android.h>
 #include <aws/core/utils/logging/android/LogcatLogSystem.h>
-
 #endif
+
 using namespace Aws::Auth;
 using namespace Aws::CognitoIdentity;
 using namespace Aws::CognitoIdentity::Model;
@@ -78,7 +77,7 @@ void upload_file_to_s3(
         credentials.SetAWSSecretKey(Aws::String(secret_key_id));
         Aws::S3::S3Client s3Client(credentials, clientConfig);
         platform_log("auth_aws: access_key_id:%s, secret_key_id:%s", access_key_id, secret_key_id);
-        auto outcome = s3Client.ListBuckets();
+//        auto outcome = s3Client.ListBuckets();
 
         Aws::S3::Model::PutObjectRequest putObjectRequest;
         putObjectRequest.WithBucket(Aws::String(bucket_name)).WithKey(Aws::String(bucket_key));
@@ -107,8 +106,7 @@ void upload_file_to_s3(
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
-BucketListData
-get_buckets(const char *access_key_id, const char *secret_key_id, const char *cert_path) {
+BucketListData get_buckets(const char *access_key_id, const char *secret_key_id, const char *cert_path) {
     std::vector<const char *> buckets;
     Aws::Auth::AWSCredentials credentials;
     BucketListData bucket_data;

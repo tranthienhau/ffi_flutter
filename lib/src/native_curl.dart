@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_add/native_curl.dart';
+import 'package:native_ffi/native_ffi.dart';
 
 ///Connect to native curl in c++
 class NativeCurl {
@@ -17,15 +17,15 @@ class NativeCurl {
 
   ///Add certificates to path
   Future<void> init(String certPath) async {
-    certPath = certPath;
+    _certPath = certPath;
   }
 
   ///In Android to use curl we must provide a certificates file
-  late String certPath;
+  late String _certPath;
 
   ///[url]: url to get data
   ///[certPath]: in Android, you must save certificates.pem and provide [certPath] to access to https
-  Future<CurlResponse> get(String url, String certPath) async {
+  Future<CurlResponse> get(String url) async {
     ///await isolate complete
     Completer<CurlResponse> _resultCompleter = Completer<CurlResponse>();
 
@@ -37,7 +37,7 @@ class NativeCurl {
       _isolateCurlGet,
       {
         'url': url,
-        'certPath': certPath,
+        'certPath': _certPath,
         'sendPort': port.sendPort,
       },
       onError: port.sendPort,
@@ -50,14 +50,14 @@ class NativeCurl {
         return;
       }
 
-      if(message is CurlResponse){
+      if (message is CurlResponse) {
         ///Complete wait data
         _resultCompleter.complete(message);
         return;
       }
 
-
-      _resultCompleter.complete(CurlResponse(data: 'Unknown exception', statusCode: -1));
+      _resultCompleter
+          .complete(CurlResponse(data: 'Unknown exception', statusCode: -1));
     });
 
     ///wait for send port return data
@@ -66,10 +66,8 @@ class NativeCurl {
     return result;
   }
 
-  Future<CurlResponse> downloadFile({ required String url,required String certPath,
-    required String savePath
-  })async {
-
+  Future<CurlResponse> downloadFile(
+      {required String url, required String savePath}) async {
     ///await isolate complete
     Completer<CurlResponse> _resultCompleter = Completer<CurlResponse>();
 
@@ -81,7 +79,7 @@ class NativeCurl {
       _isolateCurlDownload,
       {
         'url': url,
-        'certPath': certPath,
+        'certPath': _certPath,
         'savePath': savePath,
         'sendPort': port.sendPort,
       },
@@ -95,30 +93,27 @@ class NativeCurl {
         return;
       }
 
-      if(message is CurlResponse){
+      if (message is CurlResponse) {
         ///Complete wait data
         _resultCompleter.complete(message);
         return;
       }
 
-
-      _resultCompleter.complete(CurlResponse(data: 'Unknown exception', statusCode: -1));
+      _resultCompleter
+          .complete(CurlResponse(data: 'Unknown exception', statusCode: -1));
     });
 
     ///wait for send port return data
     final result = await _resultCompleter.future;
 
     return result;
-
   }
-
 
   ///Post form data in background using isolate
   ///[url]: url to get data
   ///[certPath]: in Android, you must save certificates.pem and provide [certPath] to access to https
   Future<CurlResponse?> postFormData({
     required String url,
-    required String certPath,
     required List<FormData> formDataList,
   }) async {
     ///await isolate complete
@@ -127,15 +122,12 @@ class NativeCurl {
     ///create receiport to get response
     final port = ReceivePort();
 
-    // IsolateNameServer.registerPortWithName(
-    //     port.sendPort, 'isolateCurlPostFormData');
-
     /// Spawning an isolate
     Isolate.spawn<Map<String, dynamic>>(
       _isolateCurlPostFormData,
       {
         'url': url,
-        'certPath': certPath,
+        'certPath': _certPath,
         'formDataList': formDataList,
         'sendPort': port.sendPort,
       },
@@ -149,14 +141,13 @@ class NativeCurl {
         return;
       }
 
-      if(message is CurlResponse){
+      if (message is CurlResponse) {
         ///Complete wait data
         _resultCompleter.complete(message);
         return;
       }
 
       _resultCompleter.complete(null);
-
     });
 
     ///wait for send port return data

@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_add/native_curl.dart';
+import 'package:native_ffi/native_ffi.dart';
 
 ///Native curl reponse in ([downloadFile], [nativeCurlPost], [nativeCurlGet])
 class NativeCurlResponse extends Struct {

@@ -1,5 +1,5 @@
 import 'dart:ffi';
-import 'package:native_add/native_curl.dart';
+import 'package:native_ffi/native_ffi.dart';
 
 ///Native file data in [readFileNative]
 class FileData extends Struct {

@@ -1,4 +1,4 @@
-name: native_add
+name: native_ffi
 description: A new flutter plugin project.
 version: 0.0.1
 homepage:
@@ -16,6 +16,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+  change_app_package_name: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -29,7 +30,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.native_add
+        package: com.example.native_ffi
         pluginClass: NativeAddPlugin
       ios:
         pluginClass: NativeAddPlugin

@@ -1,7 +1,5 @@
 #include <stdint.h>
 #include <iostream>
-#include "curl.h"
-#include "native_curl.h"
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -13,7 +11,8 @@
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
-
+#include "curl.h"
+#include "general_funtion.h"
 #include <zlib.h>
 //#include <aws/core/auth/AWSCredentialsProvider.h>
 #ifdef __ANDROID__
@@ -21,17 +20,17 @@
 #endif
 using namespace std;
 
-//Log to view in console
-void platform_log(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-#ifdef __ANDROID__
-    __android_log_vprint(ANDROID_LOG_VERBOSE, "native_curl:", fmt, args);
-#else
-    vprintf(fmt, args);
-#endif
-    va_end(args);
-}
+////Log to view in console
+//void platform_log(const char *fmt, ...) {
+//    va_list args;
+//    va_start(args, fmt);
+//#ifdef __ANDROID__
+//    __android_log_vprint(ANDROID_LOG_VERBOSE, "native_curl:", fmt, args);
+//#else
+//    vprintf(fmt, args);
+//#endif
+//    va_end(args);
+//}
 
 
 //#ifdef __cplusplus
@@ -125,7 +124,7 @@ struct CurlResponse curl_post_form_data(const char* url, const char* cert_path, 
             part = curl_mime_addpart(mime);
             curl_mime_name(part, name);
 
-            platform_log("curl_formadd: name:%s, value:%s, type:%d", name, value, type);
+            platform_log("curl_form: name:%s, value:%s, type:%d", name, value, type);
 
             //Check type of CurlFormData: 0: text, 1:path of file
             switch (type) {
