@@ -1,5 +1,6 @@
 
 enum ImageFilter { cartoon, gray, sepia, edgePreserving, stylization }
+
 class ProcessImageArguments {
   final String inputPath;
   final String outputPath;

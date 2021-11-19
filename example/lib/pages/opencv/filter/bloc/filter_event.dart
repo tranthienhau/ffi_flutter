@@ -17,3 +17,9 @@ class FilterImageSelected extends FilterEvent {
 }
 
 class FilterUpload extends FilterEvent {}
+
+class FilterUpdated extends FilterEvent {
+  FilterUpdated(this.filterData);
+
+  final ImageFilterData filterData;
+}

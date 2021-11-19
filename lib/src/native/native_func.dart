@@ -98,7 +98,41 @@ final Pointer<Utf8> Function(Pointer<Utf8>) nativeCompressString = _nativeLib
 
 typedef _CProcessImageFunc = Void Function(Pointer<Utf8>, Pointer<Utf8>);
 
+typedef _CProcessMatFilterFunc = Void Function(Pointer, Pointer<Utf8>);
+
+typedef _ProcessMatFilterFunc = void Function(Pointer, Pointer<Utf8>);
+
+typedef _CCreateMatFilterFunc = Pointer Function(Pointer<Utf8>);
+
+typedef _CreateMatFilterFunc = Pointer Function(Pointer<Utf8>);
+
 typedef _ProcessImageFunc = void Function(Pointer<Utf8>, Pointer<Utf8>);
+
+final _CreateMatFilterFunc createMatPointer = _nativeLib
+    .lookup<NativeFunction<_CCreateMatFilterFunc>>('create_mat_pointer')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatGrayFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_gray_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatCartoonFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_cartoon_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatSepiaFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_sepia_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatEdgePreservingFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>(
+        'apply_mat_edge_preserving_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatStylizationFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>(
+        'apply_mat_stylization_filter')
+    .asFunction();
 
 final _ProcessImageFunc processGrayFilter = _nativeLib
     .lookup<NativeFunction<_CProcessImageFunc>>('apply_gray_filter')

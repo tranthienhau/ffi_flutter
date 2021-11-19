@@ -6,11 +6,11 @@ class FilterBlocData {
     required this.selectionIndex,
   });
 
-  final Map<ImageFilter, String> imageFilterMap;
+  final Map<ImageFilter, String?> imageFilterMap;
   final int selectionIndex;
 
   FilterBlocData copyWith({
-    Map<ImageFilter, String>? imageFilterMap,
+    Map<ImageFilter, String?>? imageFilterMap,
     int? selectionIndex,
   }) {
     return FilterBlocData(

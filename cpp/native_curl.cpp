@@ -49,24 +49,7 @@ using namespace std;
 //}
 //#endif
 
-//curl reponse to dart side
-struct CurlResponse{
-    const char* data;
-    int status;
-};
 
-//read file data to dart side convert to Uint8List
-struct FileData{
-    uint8_t* bytes;
-    int length;
-};
-
-//curl form data use with [curl_post_form_data]
-struct CurlFormData{
-    string name;
-    string value;
-    int type;
-};
 
 //Write out data from curl perform
 size_t writeFunction(void *ptr, size_t size, size_t nmemb, string* data) {

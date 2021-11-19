@@ -41,12 +41,6 @@ struct BucketListData {
     int length;
 };
 
-struct BucketUploadData {
-    char *image_url;
-    int status;
-};
-
-
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 void upload_file_to_s3(
         const char *access_key_id,

@@ -11,7 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   ffi: ^1.1.2
-
+  rxdart: ^0.27.2
+  path_provider: ^2.0.6
+  logger: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

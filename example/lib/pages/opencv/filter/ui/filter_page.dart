@@ -7,6 +7,7 @@ import 'package:native_add_example/widgets/loading_indicator.dart';
 import 'package:native_add_example/widgets/photo_gallery/app_photo_gallery.dart';
 import 'package:native_add_example/widgets/toast_utils.dart';
 import 'package:native_ffi/native_ffi.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FilterPage extends StatefulWidget {
   const FilterPage({Key? key, required this.imagePath}) : super(key: key);
@@ -91,61 +92,111 @@ class _FilterPageState extends State<FilterPage> {
             PreviewPhotoGallery(
               onPageChanged: (int index) {},
               previewBuilder: (BuildContext context, int index) {
-                final ImageFilter filter =
-                    state.data.imageFilterMap.keys.elementAt(index);
-                return Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
+                final ImageFilter filter = imageFilterMap.keys.elementAt(index);
+                final imagePath = imageFilterMap[filter];
+                if (imagePath != null) {
+                  return Container(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(
                               Radius.circular(8),
                             ),
                             image: DecorationImage(
-                              image: FileImage(File(imageFilterMap[filter]!)),
+                              image: FileImage(File(imagePath)),
                               fit: BoxFit.cover,
-                            )),
-                      ),
-                      Container(
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8)),
+                            color: Colors.black.withAlpha(150),
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }
+
+                return Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: const SizedBox(
                         width: 100,
                         height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(8)),
-                          color: Colors.black.withAlpha(150),
+                        child: Center(
+                          child: LoadingIndicator(
+                            backgroundColor: Colors.white,
+                          ),
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(8)),
+                        color: Colors.black.withAlpha(150),
+                      ),
+                    ),
+                  ],
                 );
               },
               itemCount: imageFilterMap.length,
               selectedPreviewBuilder: (BuildContext context, int index) {
                 final ImageFilter filter = imageFilterMap.keys.elementAt(index);
+                final imagePath = imageFilterMap[filter];
 
-                return Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(8),
+                if (imagePath != null) {
+                  return Container(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                      image: DecorationImage(
+                        image: FileImage(File(imagePath)),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    image: DecorationImage(
-                      image: FileImage(File(imageFilterMap[filter]!)),
-                      fit: BoxFit.cover,
+                  );
+                }
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: const SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Center(
+                      child: LoadingIndicator(
+                        backgroundColor: Colors.white,
+                      ),
                     ),
                   ),
                 );
               },
               photoBuilder: (BuildContext context, int index) {
                 final ImageFilter filter = imageFilterMap.keys.elementAt(index);
-                return FileImage(File(imageFilterMap[filter]!));
+                final imagePath = imageFilterMap[filter];
+                if (imagePath != null) {
+                  return FileImage(File(imagePath));
+                }
+
+                return MemoryImage(kTransparentImage);
               },
               initialPage: 0,
             ),

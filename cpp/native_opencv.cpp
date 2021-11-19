@@ -4,12 +4,21 @@
 #include<opencv2/photo.hpp>
 #include<opencv2/highgui.hpp>
 #include "general_funtion.h"
+#include <opencv2/imgproc/imgproc.hpp>
+#include <iostream>
+#include <string>
+#include <cstdint>
+#include <cstring>
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #define IS_WIN32
 #endif
 
 #ifdef __ANDROID__
+
 #include <android/log.h>
+#include <opencv2/imgproc/types_c.h>
+
 #endif
 
 #ifdef IS_WIN32
@@ -17,11 +26,11 @@
 #endif
 
 #if defined(__GNUC__)
-    // Attributes to prevent 'unused' function from being removed and to make it visible
-    #define FUNCTION_ATTRIBUTE __attribute__((visibility("default"))) __attribute__((used))
+// Attributes to prevent 'unused' function from being removed and to make it visible
+#define FUNCTION_ATTRIBUTE __attribute__((visibility("default"))) __attribute__((used))
 #elif defined(_MSC_VER)
-    // Marking a function for export
-    #define FUNCTION_ATTRIBUTE __declspec(dllexport)
+// Marking a function for export
+#define FUNCTION_ATTRIBUTE __declspec(dllexport)
 #endif
 
 using namespace cv;
@@ -52,10 +61,10 @@ long long int get_now() {
 
 // Avoiding name mangling
 extern "C" {
-    FUNCTION_ATTRIBUTE
-    const char* version() {
-        return CV_VERSION;
-    }
+FUNCTION_ATTRIBUTE
+const char *version() {
+    return CV_VERSION;
+}
 
 //    FUNCTION_ATTRIBUTE
 //    void process_image(char* inputImagePath, char* outputImagePath) {
@@ -78,100 +87,194 @@ extern "C" {
 //        int evalInMillis = static_cast<int>(get_now() - start);
 //        platform_log("Processing done in %dms\n", evalInMillis);
 //    }
-    FUNCTION_ATTRIBUTE
-    void apply_gray_filter(char* inputImagePath, char* outputImagePath){
-        Mat image = imread(inputImagePath, IMREAD_GRAYSCALE);
-        if(image.empty()) {
-            return;
-        }
-        imwrite(outputImagePath, image);
-    }
 
-    FUNCTION_ATTRIBUTE
-    void apply_cartoon_filter(char* inputImagePath, char* outputImagePath){
-        //Read input image
-        Mat image = imread(inputImagePath, IMREAD_COLOR);
-        if(image.empty()) {
-            return;
-        }
-        //Convert to gray scale
-        Mat grayImage;
-        cvtColor(image, grayImage, COLOR_BGR2GRAY);
+FUNCTION_ATTRIBUTE
+Mat *create_mat_pointer(char *inputImagePath) {
 
-        //apply gaussian blur
-        GaussianBlur(grayImage, grayImage, Size(3, 3), 0);
+    Mat image = imread(inputImagePath, IMREAD_COLOR);
+    Mat *matPointer = new Mat(image);
 
-        //find edges
-        Mat edgeImage;
-        Laplacian(grayImage, edgeImage, -1, 5);
-        convertScaleAbs(edgeImage, edgeImage);
+    return matPointer;
+}
 
-        //invert the image
-        edgeImage = 255 - edgeImage;
+FUNCTION_ATTRIBUTE
+void apply_mat_gray_filter(Mat *mat, char *outputImagePath) {
+    Mat greyMat;
+    platform_log("apply_mat_gray_filter:  outputImagePath: %s", outputImagePath);
+    std::vector<uchar> array;
 
-        //apply thresholding
-        threshold(edgeImage, edgeImage, 150, 255, THRESH_BINARY);
+    cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);
 
-        //blur images heavily using edgePreservingFilter
-        Mat edgePreservingImage;
-        edgePreservingFilter(image, edgePreservingImage, 2, 50, 0.4);
+    imwrite(outputImagePath, greyMat);
 
-        // Create a output Matrix
-        Mat output;
-        output = Scalar::all(0);
+}
 
-        // Combine the cartoon and edges
-        cv::bitwise_and(edgePreservingImage, edgePreservingImage, output, edgeImage);
 
-        imwrite(outputImagePath, output);
-    }
+FUNCTION_ATTRIBUTE
+void apply_mat_cartoon_filter(Mat *mat, char *outputImagePath) {
+    //Convert to gray scale
+    Mat grayImage;
+    cvtColor(*mat, grayImage, COLOR_BGR2GRAY);
 
-    FUNCTION_ATTRIBUTE
-    void apply_sepia_filter(char* inputImagePath, char* outputImagePath){
-        //Read input image
-        Mat image = imread(inputImagePath, IMREAD_COLOR);
-        if(image.empty()) {
-            return;
-        }
-        Mat kernel = (cv::Mat_<float>(3, 3)
+    //apply gaussian blur
+    GaussianBlur(grayImage, grayImage, Size(3, 3), 0);
+
+    //find edges
+    Mat edgeImage;
+    Laplacian(grayImage, edgeImage, -1, 5);
+    convertScaleAbs(edgeImage, edgeImage);
+
+    //invert the image
+    edgeImage = 255 - edgeImage;
+
+    //apply thresholding
+    threshold(edgeImage, edgeImage, 150, 255, THRESH_BINARY);
+
+    //blur images heavily using edgePreservingFilter
+    Mat edgePreservingImage;
+    edgePreservingFilter(*mat, edgePreservingImage, 2, 50, 0.4);
+
+    // Create a output Matrix
+    Mat output;
+    output = Scalar::all(0);
+
+    // Combine the cartoon and edges
+    cv::bitwise_and(edgePreservingImage, edgePreservingImage, output, edgeImage);
+
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_sepia_filter(Mat *mat, char *outputImagePath) {
+
+    Mat kernel = (cv::Mat_<float>(3, 3)
             <<
             0.272, 0.534, 0.131,
             0.349, 0.686, 0.168,
             0.393, 0.769, 0.189);
 
-        // Create a output Matrix
-        Mat output;
-        cv::transform(image, output, kernel);
+    // Create a output Matrix
+    Mat output;
+    cv::transform(*mat, output, kernel);
 
-        imwrite(outputImagePath, output);
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_edge_preserving_filter(Mat *mat, char *outputImagePath) {
+    // Create a output Matrix
+    Mat output;
+
+    cv::edgePreservingFilter(*mat, output, 1, 60, 0.4);
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_stylization_filter(Mat *mat, char *outputImagePath) {
+
+    // Create a output Matrix
+    Mat output;
+
+    cv::stylization(*mat, output, 60, 0.07);
+
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_gray_filter(char *inputImagePath, char *outputImagePath) {
+    Mat image = imread(inputImagePath, IMREAD_GRAYSCALE);
+    if (image.empty()) {
+        return;
     }
+    imwrite(outputImagePath, image);
+}
 
-    FUNCTION_ATTRIBUTE
-    void apply_edge_preserving_filter(char* inputImagePath, char* outputImagePath){
-        //Read input image
-        Mat image = imread(inputImagePath, IMREAD_COLOR);
-        if(image.empty()) {
-            return;
-        }
-        // Create a output Matrix
-        Mat output;
 
-        cv::edgePreservingFilter(image, output,1, 60, 0.4);
-        imwrite(outputImagePath, output);
+FUNCTION_ATTRIBUTE
+void apply_cartoon_filter(char *inputImagePath, char *outputImagePath) {
+    //Read input image
+    Mat image = imread(inputImagePath, IMREAD_COLOR);
+    if (image.empty()) {
+        return;
     }
+    //Convert to gray scale
+    Mat grayImage;
+    cvtColor(image, grayImage, COLOR_BGR2GRAY);
 
-    FUNCTION_ATTRIBUTE
-    void apply_stylization_filter(char* inputImagePath, char* outputImagePath){
-        //Read input image
-        Mat image = imread(inputImagePath, IMREAD_COLOR);
-        if(image.empty()) {
-            return;
-        }
-        // Create a output Matrix
-        Mat output;
+    //apply gaussian blur
+    GaussianBlur(grayImage, grayImage, Size(3, 3), 0);
 
-        cv::stylization(image, output, 60, 0.07);
+    //find edges
+    Mat edgeImage;
+    Laplacian(grayImage, edgeImage, -1, 5);
+    convertScaleAbs(edgeImage, edgeImage);
 
-        imwrite(outputImagePath, output);
+    //invert the image
+    edgeImage = 255 - edgeImage;
+
+    //apply thresholding
+    threshold(edgeImage, edgeImage, 150, 255, THRESH_BINARY);
+
+    //blur images heavily using edgePreservingFilter
+    Mat edgePreservingImage;
+    edgePreservingFilter(image, edgePreservingImage, 2, 50, 0.4);
+
+    // Create a output Matrix
+    Mat output;
+    output = Scalar::all(0);
+
+    // Combine the cartoon and edges
+    cv::bitwise_and(edgePreservingImage, edgePreservingImage, output, edgeImage);
+
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_sepia_filter(char *inputImagePath, char *outputImagePath) {
+    //Read input image
+    Mat image = imread(inputImagePath, IMREAD_COLOR);
+    if (image.empty()) {
+        return;
     }
+    Mat kernel = (cv::Mat_<float>(3, 3)
+            <<
+            0.272, 0.534, 0.131,
+            0.349, 0.686, 0.168,
+            0.393, 0.769, 0.189);
+
+    // Create a output Matrix
+    Mat output;
+    cv::transform(image, output, kernel);
+
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_edge_preserving_filter(char *inputImagePath, char *outputImagePath) {
+    //Read input image
+    Mat image = imread(inputImagePath, IMREAD_COLOR);
+    if (image.empty()) {
+        return;
+    }
+    // Create a output Matrix
+    Mat output;
+
+    cv::edgePreservingFilter(image, output, 1, 60, 0.4);
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_stylization_filter(char *inputImagePath, char *outputImagePath) {
+    //Read input image
+    Mat image = imread(inputImagePath, IMREAD_COLOR);
+    if (image.empty()) {
+        return;
+    }
+    // Create a output Matrix
+    Mat output;
+
+    cv::stylization(image, output, 60, 0.07);
+
+    imwrite(outputImagePath, output);
+}
 }

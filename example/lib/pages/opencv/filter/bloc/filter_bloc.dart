@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,10 +26,33 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     on<FilterLoaded>(_onLoaded);
     on<FilterUpload>(_onUpload);
     on<FilterImageSelected>(_onImageSelected);
+    on<FilterUpdated>(_onUpdated);
   }
 
   final logger = Logger();
   final NativeCurl _nativeCurl = NativeCurl();
+  final NativeCv _nativeCv = NativeCv();
+
+  Completer<void>? _updateCompleter;
+
+  Future<void> _onUpdated(
+      FilterUpdated event, Emitter<FilterState> emit) async {
+
+    final filterMap = state.data.imageFilterMap;
+
+    final ImageFilterData filterData = event.filterData;
+    filterMap[filterData.filter] = filterData.filterPath;
+
+    emit(
+      FilterLoadSuccess(
+        state.data.copyWith(
+          imageFilterMap: filterMap,
+        ),
+      ),
+    );
+
+    // _updateCompleter?.complete();
+  }
 
   Future<void> _onImageSelected(
       FilterImageSelected event, Emitter<FilterState> emit) async {
@@ -41,37 +65,32 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     );
   }
 
+  StreamSubscription? _streamSubscription;
+
   Future<void> _onLoaded(FilterLoaded event, Emitter<FilterState> emit) async {
     await _initCurl();
 
-    final Map<ImageFilter, String> filterMap = {};
-
-    final path = await _localPath;
-    final fileName = event.imagePath.split('/').last.split('.').first;
-
-    for (final filter in ImageFilter.values) {
-      final filterName = filter.toString().split('.').last;
-      final outputPath = '$path/${fileName}_$filterName.jpg';
-
-      try {
-        await NativeCv.processImageFilter(
-          ProcessImageArguments(
-            outputPath: outputPath,
-            inputPath: event.imagePath,
-            filter: filter,
-          ),
-        );
-
-        filterMap[filter] = outputPath;
-      } catch (e, stack) {
-        logger.e('Apply filter error', e.toString(), stack);
-      }
+    try {
+      _nativeCv.processAllFilters(event.imagePath);
+    } catch (e, stack) {
+      logger.e('Apply filter error', e.toString(), stack);
     }
+
+    final imageFilterMap = <ImageFilter, String?>{};
+    for (final filter in ImageFilter.values) {
+      imageFilterMap[filter] = null;
+    }
+
+    _streamSubscription ??= _nativeCv.onImageFilterComplete.listen(
+      (filterData) {
+        add(FilterUpdated(filterData));
+      },
+    );
 
     emit(
       FilterLoadSuccess(
         state.data.copyWith(
-          imageFilterMap: filterMap,
+          imageFilterMap: imageFilterMap,
           selectionIndex: 0,
         ),
       ),
@@ -137,5 +156,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     await cacertFile.writeAsBytes(
         buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
     _nativeCurl.init(cacertFile.path);
+  }
+
+  @override
+  Future<void> close() {
+    _streamSubscription?.cancel();
+    return super.close();
   }
 }
