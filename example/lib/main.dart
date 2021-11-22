@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:native_add_example/pages/aws/aws_example_page.dart';
 import 'package:native_add_example/pages/curl/curl_example_page.dart';
-import 'package:native_add_example/pages/opencv/select_image_page.dart';
+import 'package:native_add_example/pages/opencv/gallery/ui/gallery_page.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 void main() {
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return const SelectImagePage();
+                            return const GalleryPage();
                           },
                         ),
                       );

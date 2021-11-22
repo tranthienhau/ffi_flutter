@@ -27,15 +27,7 @@ class NativeCv {
 
   NativeCv._internal();
 
-  final PublishSubject<ImageFilterData> _progressFilterBehaviorSubject =
-      PublishSubject<ImageFilterData>();
-
-  Stream<ImageFilterData> get onImageFilterComplete =>
-      _progressFilterBehaviorSubject.stream;
-
-  Future<void> processAllFilters(String inputPath) async {
-    Completer<void> _resultCompleter = Completer<void>();
-
+  Future<Stream<ImageFilterData?>> processAllFiltersStream(String inputPath) async {
     ///create receiport to get response
     final port = ReceivePort();
     final localPath = await _localPath;
@@ -52,28 +44,16 @@ class NativeCv {
       onExit: port.sendPort,
     );
 
-    int filteCount = 0;
-    port.listen((message) {
-      filteCount++;
-
-      ///ensure not call more than one times
-      if (_resultCompleter.isCompleted) {
-        return;
-      }
-
+    return port.map((message) {
       if (message is ImageFilterData) {
-        _progressFilterBehaviorSubject.sink.add(message);
+        return message;
       }
 
-      if (filteCount == ImageFilter.values.length) {
-        _resultCompleter.complete();
-      }
-      //
+      return null;
     });
-
-    ///wait for send port return data
-    await _resultCompleter.future;
   }
+
+
 
   Future<void> processImageFilter(ProcessImageArguments args) async {
     Completer<List<String>?> _resultCompleter = Completer<List<String>?>();
@@ -105,8 +85,6 @@ class NativeCv {
     await _resultCompleter.future;
 
     ///release for other request
-    // _lockRequest?.complete();
-    // return result;
   }
 }
 
@@ -163,7 +141,6 @@ void _isolateProcessAllFilters(Map<String, dynamic> data) {
     ));
 
     logger.i('Filter $fileName complete');
-
 
     calloc.free(outputPathPointer);
   }

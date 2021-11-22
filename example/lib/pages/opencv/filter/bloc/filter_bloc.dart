@@ -19,14 +19,14 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
   FilterBloc()
       : super(const FilterLoading(
           FilterBlocData(
-            imageFilterMap: {},
-            selectionIndex: -1,
-          ),
+             selectionIndex: -1, imageFilterDataMap: {}),
         )) {
     on<FilterLoaded>(_onLoaded);
     on<FilterUpload>(_onUpload);
     on<FilterImageSelected>(_onImageSelected);
-    on<FilterUpdated>(_onUpdated);
+    // on<FilterUpdated>(_onUpdated);
+    on<FilterThumnailUpdated>(_onThumnailUpdated);
+    on<FilterOriginalUpdated>(_onOriginalUpdated);
   }
 
   final logger = Logger();
@@ -35,24 +35,76 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
 
   Completer<void>? _updateCompleter;
 
-  Future<void> _onUpdated(
-      FilterUpdated event, Emitter<FilterState> emit) async {
+  Future<void> _onOriginalUpdated(
+      FilterOriginalUpdated event, Emitter<FilterState> emit) async {
+    final original = event.original;
+    final filter = event.filter;
+    final imageFilterDataMap = state.data.imageFilterDataMap;
 
-    final filterMap = state.data.imageFilterMap;
-
-    final ImageFilterData filterData = event.filterData;
-    filterMap[filterData.filter] = filterData.filterPath;
+    final filterData = imageFilterDataMap[filter];
+    if (filterData != null) {
+      imageFilterDataMap[filter] = filterData.copyWith(
+        original: original,
+      );
+    } else {
+      imageFilterDataMap[filter] = FilterData(
+        original: original,
+        thumnail: original,
+      );
+    }
 
     emit(
       FilterLoadSuccess(
         state.data.copyWith(
-          imageFilterMap: filterMap,
+          imageFilterDataMap: imageFilterDataMap,
         ),
       ),
     );
-
-    // _updateCompleter?.complete();
   }
+
+  Future<void> _onThumnailUpdated(
+      FilterThumnailUpdated event, Emitter<FilterState> emit) async {
+    final thumnail = event.thumnail;
+    final filter = event.filter;
+    final imageFilterDataMap = state.data.imageFilterDataMap;
+
+    final filterData = imageFilterDataMap[filter];
+    if (filterData != null) {
+      imageFilterDataMap[filter] = filterData.copyWith(
+        thumnail: thumnail,
+      );
+    } else {
+      imageFilterDataMap[filter] = FilterData(
+        thumnail: thumnail,
+      );
+    }
+
+    emit(
+      FilterLoadSuccess(
+        state.data.copyWith(
+          imageFilterDataMap: imageFilterDataMap,
+        ),
+      ),
+    );
+  }
+
+  // Future<void> _onUpdated(
+  //     FilterUpdated event, Emitter<FilterState> emit) async {
+  //   final filterMap = state.data.imageFilterDataMap;
+  //
+  //   final ImageFilterData filterData = event.filterData;
+  //   filterMap[filterData.filter] = filterData.filterPath;
+  //
+  //   emit(
+  //     FilterLoadSuccess(
+  //       state.data.copyWith(
+  //         imageFilterDataMap: imageFilterDataMap,
+  //       ),
+  //     ),
+  //   );
+  //
+  //   // _updateCompleter?.complete();
+  // }
 
   Future<void> _onImageSelected(
       FilterImageSelected event, Emitter<FilterState> emit) async {
@@ -70,31 +122,63 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
   Future<void> _onLoaded(FilterLoaded event, Emitter<FilterState> emit) async {
     await _initCurl();
 
-    try {
-      _nativeCv.processAllFilters(event.imagePath);
-    } catch (e, stack) {
-      logger.e('Apply filter error', e.toString(), stack);
-    }
-
-    final imageFilterMap = <ImageFilter, String?>{};
+    final imageFilterDataMap = <ImageFilter, FilterData?>{};
     for (final filter in ImageFilter.values) {
-      imageFilterMap[filter] = null;
+      imageFilterDataMap[filter] = null;
     }
-
-    _streamSubscription ??= _nativeCv.onImageFilterComplete.listen(
-      (filterData) {
-        add(FilterUpdated(filterData));
-      },
-    );
 
     emit(
       FilterLoadSuccess(
         state.data.copyWith(
-          imageFilterMap: imageFilterMap,
+          imageFilterDataMap: imageFilterDataMap,
           selectionIndex: 0,
         ),
       ),
     );
+
+    try {
+      final fileNameEx = event.imagePath.split('/').last;
+      final fileName = fileNameEx.split('.').first;
+      final extension = fileNameEx.split('.').last;
+
+      final path = await _localPath;
+      final thumnailPath = '$path/${fileName}_thumnail.$extension';
+
+      await File(thumnailPath).writeAsBytes(event.thumnail);
+
+      final Stream<ImageFilterData?> streamThumnailFilter =
+          await _nativeCv.processAllFiltersStream(thumnailPath);
+
+      streamThumnailFilter.listen(
+        (filterData) {
+          if (filterData != null) {
+            add(
+              FilterThumnailUpdated(
+                thumnail: filterData.filterPath,
+                filter: filterData.filter,
+              ),
+            );
+          }
+        },
+      );
+
+      final Stream<ImageFilterData?> streamOriginFilter =
+          await _nativeCv.processAllFiltersStream(event.imagePath);
+      streamOriginFilter.listen(
+        (filterData) {
+          if (filterData != null) {
+            add(
+              FilterOriginalUpdated(
+                original: filterData.filterPath,
+                filter: filterData.filter,
+              ),
+            );
+          }
+        },
+      );
+    } catch (e, stack) {
+      logger.e('Apply filter error', e.toString(), stack);
+    }
   }
 
   Future<void> _onUpload(FilterUpload event, Emitter<FilterState> emit) async {
@@ -105,7 +189,7 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     emit(FilterBusy(state.data));
 
     final filter =
-        state.data.imageFilterMap.keys.elementAt(state.data.selectionIndex);
+        state.data.imageFilterDataMap.keys.elementAt(state.data.selectionIndex);
 
     try {
       final reponseData = await _nativeCurl.postFormData(
@@ -114,7 +198,7 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
           FormData(
             type: FormDataType.file,
             name: 'upload',
-            value: state.data.imageFilterMap[filter]!,
+            value: state.data.imageFilterDataMap[filter]!.original!,
           ),
           FormData(
             type: FormDataType.text,
@@ -154,7 +238,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     final buffer = data.buffer;
 
     await cacertFile.writeAsBytes(
-        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+      buffer.asUint8List(
+        data.offsetInBytes,
+        data.lengthInBytes,
+      ),
+    );
     _nativeCurl.init(cacertFile.path);
   }
 

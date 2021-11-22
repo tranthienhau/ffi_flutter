@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +11,11 @@ import 'package:native_ffi/native_ffi.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class FilterPage extends StatefulWidget {
-  const FilterPage({Key? key, required this.imagePath}) : super(key: key);
+  const FilterPage({Key? key, required this.imagePath, required this.thumnail})
+      : super(key: key);
 
   final String imagePath;
+  final Uint8List thumnail;
 
   @override
   _FilterPageState createState() => _FilterPageState();
@@ -23,7 +26,10 @@ class _FilterPageState extends State<FilterPage> {
 
   @override
   void initState() {
-    _filterBloc.add(FilterLoaded(widget.imagePath));
+    _filterBloc.add(FilterLoaded(
+      imagePath: widget.imagePath,
+      thumnail: widget.thumnail,
+    ));
     super.initState();
   }
 
@@ -78,7 +84,8 @@ class _FilterPageState extends State<FilterPage> {
         }
       },
       builder: (context, state) {
-        final imageFilterMap = state.data.imageFilterMap;
+        // final imageFilterMap = state.data.imageFilterMap;
+        final imageFilterDataMap = state.data.imageFilterDataMap;
         if (state is FilterLoading) {
           return const Center(
             child: LoadingIndicator(
@@ -92,9 +99,9 @@ class _FilterPageState extends State<FilterPage> {
             PreviewPhotoGallery(
               onPageChanged: (int index) {},
               previewBuilder: (BuildContext context, int index) {
-                final ImageFilter filter = imageFilterMap.keys.elementAt(index);
-                final imagePath = imageFilterMap[filter];
-                if (imagePath != null) {
+                final ImageFilter filter = imageFilterDataMap.keys.elementAt(index);
+                final filterData = imageFilterDataMap[filter];
+                if (filterData != null) {
                   return Container(
                     margin:
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -108,7 +115,7 @@ class _FilterPageState extends State<FilterPage> {
                               Radius.circular(8),
                             ),
                             image: DecorationImage(
-                              image: FileImage(File(imagePath)),
+                              image: FileImage(File(filterData.thumnail)),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -146,19 +153,18 @@ class _FilterPageState extends State<FilterPage> {
                       height: 100,
                       decoration: BoxDecoration(
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(8)),
+                            const BorderRadius.all(Radius.circular(8)),
                         color: Colors.black.withAlpha(150),
                       ),
                     ),
                   ],
                 );
               },
-              itemCount: imageFilterMap.length,
+              itemCount: imageFilterDataMap.length,
               selectedPreviewBuilder: (BuildContext context, int index) {
-                final ImageFilter filter = imageFilterMap.keys.elementAt(index);
-                final imagePath = imageFilterMap[filter];
-
-                if (imagePath != null) {
+                final ImageFilter filter = imageFilterDataMap.keys.elementAt(index);
+                final filterData = imageFilterDataMap[filter];
+                if (filterData != null) {
                   return Container(
                     margin:
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -169,7 +175,7 @@ class _FilterPageState extends State<FilterPage> {
                         Radius.circular(8),
                       ),
                       image: DecorationImage(
-                        image: FileImage(File(imagePath)),
+                        image: FileImage(File(filterData.thumnail)),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -190,10 +196,10 @@ class _FilterPageState extends State<FilterPage> {
                 );
               },
               photoBuilder: (BuildContext context, int index) {
-                final ImageFilter filter = imageFilterMap.keys.elementAt(index);
-                final imagePath = imageFilterMap[filter];
-                if (imagePath != null) {
-                  return FileImage(File(imagePath));
+                final ImageFilter filter = imageFilterDataMap.keys.elementAt(index);
+                final original = imageFilterDataMap[filter]?.original;
+                if (original != null) {
+                  return FileImage(File(original));
                 }
 
                 return MemoryImage(kTransparentImage);
