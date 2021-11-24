@@ -20,55 +20,62 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return OverlaySupport.global(
       child: MaterialApp(
-        home: Builder(builder: (context) {
-          return Scaffold(
-              appBar: AppBar(
-                title: const Text('Plugin example app'),
-              ),
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildNavigateButton(
-                      title: 'Curl example page',
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return const CurlExamplePage();
-                            },
-                          ),
-                        );
-                      }),
-                  _buildNavigateButton(
-                    title: 'Aws example page',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return const AwsExamplePage();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  _buildNavigateButton(
-                    title: 'Opencv example page',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return const GalleryPage();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ));
-        }),
+        home: _buildBodyOpencv(),
       ),
     );
+  }
+
+  Widget _buildBodyExamples() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildNavigateButton(
+              title: 'Curl example page',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return const CurlExamplePage();
+                    },
+                  ),
+                );
+              }),
+          _buildNavigateButton(
+            title: 'Aws example page',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return const AwsExamplePage();
+                  },
+                ),
+              );
+            },
+          ),
+          _buildNavigateButton(
+            title: 'Opencv example page',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return const GalleryPage();
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBodyOpencv() {
+    return const GalleryPage();
   }
 
   Widget _buildNavigateButton(

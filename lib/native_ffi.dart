@@ -1,5 +1,6 @@
 export 'src/entity/bucket_list_data.dart';
 export 'src/entity/curl_response.dart';
+export 'src/entity/duo_tone_param.dart';
 export 'src/entity/file_data.dart';
 export 'src/entity/form_data.dart';
 export 'src/entity/process_image.dart';

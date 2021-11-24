@@ -96,6 +96,17 @@ final Pointer<Utf8> Function(Pointer<Utf8>) nativeCompressString = _nativeLib
         "compress_string")
     .asFunction();
 
+typedef _CProcessMatDuoToneImageFunc = Void Function(
+    Pointer, Pointer<Utf8>, DuoToneParam);
+
+typedef _ProcessMatDuoToneImageFunc = void Function(
+    Pointer, Pointer<Utf8>, DuoToneParam);
+
+final _ProcessMatDuoToneImageFunc createMatDuoTonePointer = _nativeLib
+    .lookup<NativeFunction<_CProcessMatDuoToneImageFunc>>(
+        'apply_mat_duo_tone_filter')
+    .asFunction();
+
 typedef _CProcessImageFunc = Void Function(Pointer<Utf8>, Pointer<Utf8>);
 
 typedef _CProcessMatFilterFunc = Void Function(Pointer, Pointer<Utf8>);
@@ -132,6 +143,27 @@ final _ProcessMatFilterFunc processMatEdgePreservingFilter = _nativeLib
 final _ProcessMatFilterFunc processMatStylizationFilter = _nativeLib
     .lookup<NativeFunction<_CProcessMatFilterFunc>>(
         'apply_mat_stylization_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatSummerFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_summer_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatInvertFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_invert_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatPencilSketchFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>(
+        'apply_mat_pencil_sketch_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatSharpenFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_sharpen_filter')
+    .asFunction();
+
+final _ProcessMatFilterFunc processMatHdrFilter = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFilterFunc>>('apply_mat_hdr_filter')
     .asFunction();
 
 final _ProcessImageFunc processGrayFilter = _nativeLib

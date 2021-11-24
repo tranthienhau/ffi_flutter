@@ -36,28 +36,19 @@
 using namespace cv;
 using namespace std;
 
+struct DuoToneParam {
+    float exponent;
+    int s1; // value from 0-2 (0 : BLUE n1 : GREEN n2 : RED)
+    int s2; // value from 0-3 (0 : BLUE n1 : GREEN n2 : RED n3 : NONE)
+    int s3; // (0 : DARK n1 : LIGHT)
+};
+
+
 long long int get_now() {
     return chrono::duration_cast<std::chrono::milliseconds>(
             chrono::system_clock::now().time_since_epoch()
     ).count();
 }
-//
-//void platform_log(const char *fmt, ...) {
-//    va_list args;
-//    va_start(args, fmt);
-//#ifdef __ANDROID__
-//    __android_log_vprint(ANDROID_LOG_VERBOSE, "ndk", fmt, args);
-//#elif defined(IS_WIN32)
-//    char *buf = new char[4096];
-//    std::fill_n(buf, 4096, '\0');
-//    _vsprintf_p(buf, 4096, fmt, args);
-//    OutputDebugStringA(buf);
-//    delete[] buf;
-//#else
-//    vprintf(fmt, args);
-//#endif
-//    va_end(args);
-//}
 
 // Avoiding name mangling
 extern "C" {
@@ -65,28 +56,6 @@ FUNCTION_ATTRIBUTE
 const char *version() {
     return CV_VERSION;
 }
-
-//    FUNCTION_ATTRIBUTE
-//    void process_image(char* inputImagePath, char* outputImagePath) {
-//        long long start = get_now();
-//
-//        Mat input = imread(inputImagePath, IMREAD_GRAYSCALE);
-//        Mat threshed, withContours;
-//
-//        vector<vector<Point>> contours;
-//        vector<Vec4i> hierarchy;
-//
-//        adaptiveThreshold(input, threshed, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 77, 6);
-//        findContours(threshed, contours, hierarchy, RETR_TREE, CHAIN_APPROX_TC89_L1);
-//
-//        cvtColor(threshed, withContours, COLOR_GRAY2BGR);
-//        drawContours(withContours, contours, -1, Scalar(0, 255, 0), 4);
-//
-//        imwrite(outputImagePath, withContours);
-//
-//        int evalInMillis = static_cast<int>(get_now() - start);
-//        platform_log("Processing done in %dms\n", evalInMillis);
-//    }
 
 FUNCTION_ATTRIBUTE
 Mat *create_mat_pointer(char *inputImagePath) {
@@ -106,6 +75,138 @@ void apply_mat_gray_filter(Mat *mat, char *outputImagePath) {
     cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);
 
     imwrite(outputImagePath, greyMat);
+
+}
+
+Mat exponential_function(Mat channel, float exp) {
+    Mat table(1, 256, CV_8U);
+
+    for (int i = 0; i < 256; i++)
+        table.at<uchar>(i) = min((int) pow(i, exp), 255);
+
+    LUT(channel, table, channel);
+    return channel;
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_duo_tone_filter(Mat *mat, char *outputImagePath, DuoToneParam param) {
+
+
+    Mat duo_tone = mat->clone();
+    float exp = 1.0f + param.exponent / 100.0f;
+    int s1 = param.s1;
+    int s2 = param.s2;
+    int s3 = param.s3;
+
+    platform_log("apply_mat_duo_tone_filter:  param: %d,s1: %d,s2: %d,s3: %d", param.exponent, s1,
+                 s2, s3);
+
+    Mat channels[3];
+    split(duo_tone, channels);
+
+    for (int i = 0; i < 3; i++) {
+        if ((i == s1) || (i == s2)) {
+            channels[i] = exponential_function(channels[i], exp);
+        } else {
+            if (s3) {
+                channels[i] = exponential_function(channels[i], 2 - exp);
+            } else {
+                channels[i] = Mat::zeros(channels[i].size(), CV_8UC1);
+            }
+        }
+    }
+
+    vector<Mat> newChannels{channels[0], channels[1], channels[2]};
+
+    merge(newChannels, duo_tone);
+
+//    std::vector<uchar> array;
+
+//    cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);
+
+    imwrite(outputImagePath, duo_tone);
+
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_invert_filter(Mat *mat, char *outputImagePath) {
+    Mat output;
+    bitwise_not(*mat, output);
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_pencil_sketch_filter(Mat *mat, char *outputImagePath) {
+    Mat kernel = (cv::Mat_<float>(3, 3)
+            <<
+            -1, -1, -1,
+            -1, 9.5, -1,
+            -1, -1, -1);
+    Mat colorOutput;
+    Mat grayOutput;
+    pencilSketch(*mat, grayOutput, colorOutput, 60, 0.07, 0.1);
+    imwrite(outputImagePath, colorOutput);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_sharpen_filter(Mat *mat, char *outputImagePath) {
+    Mat kernel = (cv::Mat_<float>(3, 3)
+            <<
+            -1, -1, -1,
+            -1, 9.5, -1,
+            -1, -1, -1);
+    Mat output;
+    filter2D(*mat, output, -1, kernel);
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_hdr_filter(Mat *mat, char *outputImagePath) {
+    Mat output;
+    detailEnhance(*mat, output, 12, 0.15);
+    imwrite(outputImagePath, output);
+}
+
+FUNCTION_ATTRIBUTE
+void apply_mat_summer_filter(Mat *mat, char *outputImagePath) {
+//    Mat greyMat;
+    platform_log("apply_mat_summer_filter:  outputImagePath: %s", outputImagePath);
+//    std::vector<uchar> array;
+//
+//    cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);
+
+    float data[8] = {0, 64, 128, 256, 0, 80, 160, 256};
+    cv::Mat your_matrix = cv::Mat(3, 2, CV_8U, data);
+
+    Mat increase_lookup = (cv::Mat_<float>(3, 2)
+            <<
+            0, 64, 128, 256,
+            0, 80, 160, 256);
+
+    Mat decrease_lookup = (cv::Mat_<float>(3, 2)
+            <<
+            0, 64, 128, 256,
+            0, 50, 100, 256);
+    Mat channel_mat[3];
+    split(*mat, channel_mat);
+
+    Mat blue_channel = channel_mat[0];
+    Mat green_channel = channel_mat[1];
+    Mat red_channel = channel_mat[2];
+
+
+    Mat red_lut;
+    Mat blue_lut;
+    cv::LUT(red_channel, increase_lookup, red_lut);
+    cv::LUT(blue_channel, decrease_lookup, blue_lut);
+    vector<Mat> channels;
+    channels.push_back(blue_channel);
+    channels.push_back(green_channel);
+    channels.push_back(red_lut);
+
+    Mat output;
+    cv::merge(channels, output);
+    imwrite(outputImagePath, output);
 
 }
 

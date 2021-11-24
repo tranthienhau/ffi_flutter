@@ -18,8 +18,7 @@ part 'filter_state.dart';
 class FilterBloc extends Bloc<FilterEvent, FilterState> {
   FilterBloc()
       : super(const FilterLoading(
-          FilterBlocData(
-             selectionIndex: -1, imageFilterDataMap: {}),
+          FilterBlocData(selectionIndex: -1, imageFilterDataMap: {}),
         )) {
     on<FilterLoaded>(_onLoaded);
     on<FilterUpload>(_onUpload);
@@ -36,7 +35,9 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
   Completer<void>? _updateCompleter;
 
   Future<void> _onOriginalUpdated(
-      FilterOriginalUpdated event, Emitter<FilterState> emit) async {
+    FilterOriginalUpdated event,
+    Emitter<FilterState> emit,
+  ) async {
     final original = event.original;
     final filter = event.filter;
     final imageFilterDataMap = state.data.imageFilterDataMap;
@@ -125,6 +126,12 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     final imageFilterDataMap = <ImageFilter, FilterData?>{};
     for (final filter in ImageFilter.values) {
       imageFilterDataMap[filter] = null;
+      if (filter == ImageFilter.original) {
+        imageFilterDataMap[filter] = FilterData(
+          thumnail: event.imagePath,
+          original: event.imagePath,
+        );
+      }
     }
 
     emit(
@@ -191,6 +198,12 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     final filter =
         state.data.imageFilterDataMap.keys.elementAt(state.data.selectionIndex);
 
+    final original = state.data.imageFilterDataMap[filter]?.original;
+    if (original == null) {
+      emit(FilterUploadFailure(
+          error: 'Wait for filter load complete', data: state.data));
+      return;
+    }
     try {
       final reponseData = await _nativeCurl.postFormData(
         url: 'https://api.kraken.io/v1/upload',
@@ -198,7 +211,7 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
           FormData(
             type: FormDataType.file,
             name: 'upload',
-            value: state.data.imageFilterDataMap[filter]!.original!,
+            value: original,
           ),
           FormData(
             type: FormDataType.text,

@@ -80,8 +80,9 @@ void set_value_formdata_pointer_array(CurlFormData** form_data_pointer, int inde
 //Curl post form data
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 struct CurlResponse curl_post_form_data(const char* url, const char* cert_path, CurlFormData** forms, int length) {
-    struct CurlResponse curl_response;
+    struct CurlResponse curl_response{};
     curl_response.status = -1;
+    platform_log("cert_path: cert_path:%s ", cert_path);
     curl_global_init(CURL_GLOBAL_ALL);
     CURL *curl = curl_easy_init();
     if (curl) {

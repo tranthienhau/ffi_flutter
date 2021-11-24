@@ -6,6 +6,7 @@ import 'package:bloc/bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:native_add_example/pages/opencv/gallery/model/gallery_asset.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 part 'gallery_event.dart';
@@ -164,6 +165,26 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
     final file = await assets[assetIndex].originFile;
 
     if (file != null) {
+      String fileFullName = file.path.split('/').last;
+      String fileExtension = fileFullName.split('.').last;
+      String fileName = fileFullName.split('.').first;
+
+      final resizeBytes = await assets[assetIndex].thumbDataWithSize(800, 800);
+
+      if (resizeBytes != null) {
+        final localPath = await _localPath;
+        final resizePath = '$localPath/${fileName}_resize.$fileExtension';
+
+        final rezeFile = await File(resizePath).writeAsBytes(resizeBytes);
+
+        emit(GalleryAssetLoadSuccess(
+          file: rezeFile,
+          data: state.data,
+          thumnail: event.asset.bytes,
+        ));
+        return;
+      }
+
       emit(GalleryAssetLoadSuccess(
         file: file,
         data: state.data,
@@ -176,6 +197,12 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
       error: 'Can not access to this asset',
       data: state.data,
     ));
+  }
+
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
   }
 
   @override
