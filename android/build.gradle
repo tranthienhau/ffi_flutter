@@ -1,8 +1,8 @@
-group 'com.example.native_ffi'
+group 'com.sangcv.ffi_flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.5.21'
+    ext.kotlin_version = "1.5.10"
     repositories {
         google()
         mavenCentral()
@@ -23,14 +23,30 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 31
 
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 31
+        externalNativeBuild {
+            cmake {
+                cppFlags "-lGLESv2 -frtti -fexceptions -std=c++11"
+
+                // Shared runtime for shared libraries
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'
+        }
     }
 
     kotlinOptions {
@@ -41,42 +57,31 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 31
-
-        externalNativeBuild {
-            cmake {
-                // Enabling exception, RTTI and setting C++ standard version
-                cppFlags '-frtti -fexceptions -std=c++11'
-
-                // Shared runtime for shared libraries
-                arguments "-DANDROID_STL=c++_shared"
-            }
-        }
-//
-        ndk {
-            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'
-        }
-
+    dataBinding {
+        enabled = true
     }
-//    externalNativeBuild {
-//        ndkBuild {
-//            path 'src/main/cpp/Android.mk'
-//            path 'src/main/cpp/Application.mk'
-//        }
-//    }
+
+
+    packagingOptions {
+        pickFirst 'lib/x86/libopencv_java3.so'
+        pickFirst 'lib/x86_64/libopencv_java3.so'
+        pickFirst 'lib/armeabi-v7a/libopencv_java3.so'
+        pickFirst 'lib/arm64-v8a/libopencv_java3.so'
+    }
 
     externalNativeBuild {
         cmake {
-            version '3.10.2'
-            path 'CMakeLists.txt'
+            path "CMakeLists.txt"
         }
     }
-
 }
 
 dependencies {
+    implementation fileTree(include: ['*.jar', '.so'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'com.quickbirdstudios:opencv:3.4.5'
 }

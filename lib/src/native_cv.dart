@@ -4,8 +4,9 @@ import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 import 'package:logger/logger.dart';
-import 'package:native_ffi/native_ffi.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../native_ffi.dart';
 
 class ImageFilterData {
   const ImageFilterData({

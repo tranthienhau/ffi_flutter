@@ -4,11 +4,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:ffi_flutter/native_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
-import 'package:native_ffi/native_ffi.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'filter_event.dart';

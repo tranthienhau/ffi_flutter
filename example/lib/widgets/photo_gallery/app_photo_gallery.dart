@@ -1,10 +1,11 @@
 //@dart=2.12
 
 import 'package:flutter/material.dart';
-import 'package:native_add_example/widgets/loading_indicator.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../loading_indicator.dart';
 
 typedef ImageProviderBuilder = ImageProvider Function(
     BuildContext context, int index);

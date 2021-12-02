@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:ffi_flutter_example/pages/opencv/gallery/model/gallery_asset.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
-import 'package:native_add_example/pages/opencv/gallery/model/gallery_asset.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 

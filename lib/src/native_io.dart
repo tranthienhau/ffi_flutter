@@ -4,7 +4,9 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_ffi/native_ffi.dart';
+
+import '../native_ffi.dart';
+
 
 ///Call native IO for write and read file
 class NativeIO {

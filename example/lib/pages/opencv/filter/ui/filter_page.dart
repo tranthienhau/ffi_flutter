@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ffi_flutter_example/pages/opencv/filter/bloc/filter_bloc.dart';
+import 'package:ffi_flutter_example/widgets/loading_indicator.dart';
+import 'package:ffi_flutter_example/widgets/photo_gallery/app_photo_gallery.dart';
+import 'package:ffi_flutter_example/widgets/toast_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:native_add_example/pages/opencv/filter/bloc/filter_bloc.dart';
-import 'package:native_add_example/widgets/loading_indicator.dart';
-import 'package:native_add_example/widgets/photo_gallery/app_photo_gallery.dart';
-import 'package:native_add_example/widgets/toast_utils.dart';
-import 'package:native_ffi/native_ffi.dart';
+import 'package:ffi_flutter/native_ffi.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class FilterPage extends StatefulWidget {

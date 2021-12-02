@@ -1,6 +1,6 @@
-# native_add_example
+# ffi_flutter_example
 
-Demonstrates how to use the native_add plugin.
+Demonstrates how to use the ffi_flutter plugin.
 
 ## Getting Started
 

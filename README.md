@@ -1,6 +1,6 @@
-# native_add
+# ffi_flutter
 
-A new flutter plugin project.
+A new Flutter project.
 
 ## Getting Started
 

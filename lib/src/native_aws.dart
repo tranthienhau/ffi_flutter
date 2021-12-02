@@ -3,7 +3,8 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_ffi/native_ffi.dart';
+
+import '../native_ffi.dart';
 
 class NativeAws {
   ///Add certificates to path

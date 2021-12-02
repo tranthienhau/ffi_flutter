@@ -2,11 +2,13 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_ffi/native_ffi.dart';
+
+import '../../native_ffi.dart';
+
 
 ///link to native library
 final DynamicLibrary _nativeLib = Platform.isAndroid
-    ? DynamicLibrary.open("libnative_ffi.so")
+    ? DynamicLibrary.open("libnative-lib.so")
     : DynamicLibrary.process();
 
 ///link to [curl_get] to call http get

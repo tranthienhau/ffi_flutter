@@ -120,9 +120,6 @@ void apply_mat_duo_tone_filter(Mat *mat, char *outputImagePath, DuoToneParam par
 
     merge(newChannels, duo_tone);
 
-//    std::vector<uchar> array;
-
-//    cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);
 
     imwrite(outputImagePath, duo_tone);
 
