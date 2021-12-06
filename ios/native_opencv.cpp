@@ -3,7 +3,7 @@
 #include<opencv2/imgproc.hpp>
 #include<opencv2/photo.hpp>
 #include<opencv2/highgui.hpp>
-#include "general_funtion.h"
+//#include "general_funtion.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <string>
@@ -49,7 +49,6 @@ long long int get_now() {
             chrono::system_clock::now().time_since_epoch()
     ).count();
 }
-
 Mat exponential_function(Mat channel, float exp) {
     Mat table(1, 256, CV_8U);
 
@@ -79,10 +78,10 @@ Mat *create_mat_pointer(char *inputImagePath) {
 FUNCTION_ATTRIBUTE
 void apply_mat_gray_filter(Mat *mat, char *outputImagePath) {
     Mat greyMat;
-    platform_log("apply_mat_gray_filter:  outputImagePath: %s", outputImagePath);
+//    platform_log("apply_mat_gray_filter:  outputImagePath: %s", outputImagePath);
     std::vector<uchar> array;
 
-    cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);
+    cv::cvtColor(*mat, greyMat, COLOR_BGR2GRAY);
 
     imwrite(outputImagePath, greyMat);
 
@@ -99,8 +98,8 @@ void apply_mat_duo_tone_filter(Mat *mat, char *outputImagePath, DuoToneParam par
     int s2 = param.s2;
     int s3 = param.s3;
 
-    platform_log("apply_mat_duo_tone_filter:  param: %d,s1: %d,s2: %d,s3: %d", param.exponent, s1,
-                 s2, s3);
+//    platform_log("apply_mat_duo_tone_filter:  param: %d,s1: %d,s2: %d,s3: %d", param.exponent, s1,
+//                 s2, s3);
 
     Mat channels[3];
     split(duo_tone, channels);
@@ -168,7 +167,7 @@ void apply_mat_hdr_filter(Mat *mat, char *outputImagePath) {
 FUNCTION_ATTRIBUTE
 void apply_mat_summer_filter(Mat *mat, char *outputImagePath) {
 //    Mat greyMat;
-    platform_log("apply_mat_summer_filter:  outputImagePath: %s", outputImagePath);
+//    platform_log("apply_mat_summer_filter:  outputImagePath: %s", outputImagePath);
 //    std::vector<uchar> array;
 //
 //    cv::cvtColor(*mat, greyMat, CV_BGR2GRAY);

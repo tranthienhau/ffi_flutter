@@ -50,6 +50,7 @@ void _isolateReadFile(Map<String, dynamic> data) {
   final String filePath = data['filePath'];
   final SendPort sendPort = data['sendPort'];
 
+
   ///convert url and certPath to Pointer to pass to native
   final Pointer<Utf8> filePathPointer = filePath.toNativeUtf8();
 
