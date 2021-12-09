@@ -21,9 +21,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return OverlaySupport.global(
+    return const OverlaySupport.global(
       child: MaterialApp(
-        home: _buildBodyExamples(),
+        home: GalleryPage(),
       ),
     );
   }

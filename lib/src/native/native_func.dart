@@ -5,7 +5,6 @@ import 'package:ffi/ffi.dart';
 
 import '../../native_ffi.dart';
 
-
 ///link to native library
 final DynamicLibrary _nativeLib = Platform.isAndroid
     ? DynamicLibrary.open("libnative-lib.so")
@@ -111,15 +110,42 @@ final _ProcessMatDuoToneImageFunc createMatDuoTonePointer = _nativeLib
 
 typedef _CProcessImageFunc = Void Function(Pointer<Utf8>, Pointer<Utf8>);
 
+typedef _CProcessMatFunc = Void Function(
+    Pointer<Void>, Pointer<Int32> imgLengthBytes);
+
 typedef _CProcessMatFilterFunc = Void Function(Pointer, Pointer<Utf8>);
 
 typedef _ProcessMatFilterFunc = void Function(Pointer, Pointer<Utf8>);
+
+typedef _ProcessMatFunc = void Function(
+    Pointer<Void>, Pointer<Int32> imgLengthBytes);
 
 typedef _CCreateMatFilterFunc = Pointer Function(Pointer<Utf8>);
 
 typedef _CreateMatFilterFunc = Pointer Function(Pointer<Utf8>);
 
 typedef _ProcessImageFunc = void Function(Pointer<Utf8>, Pointer<Utf8>);
+
+final _ProcessMatFunc processMatToBytesGrayscale = _nativeLib
+    .lookup<NativeFunction<_CProcessMatFunc>>('process_mat_to_bytes_greyscale')
+    .asFunction();
+
+final Pointer<Void> Function(Pointer<Uint8> img, Pointer<Int32> imgLengthBytes)
+    createMatPointerFromBytes = _nativeLib
+        .lookup<
+            NativeFunction<
+                Pointer<Void> Function(Pointer<Uint8>,
+                    Pointer<Int32>)>>('create_mat_pointer_from_bytes')
+        .asFunction();
+
+final Pointer<Uint8> Function(Pointer<Void> matPointer, DuoToneParam param)
+    processMatToDuoToneBytes = _nativeLib
+        .lookup<
+            NativeFunction<
+                Pointer<Uint8> Function(
+                    Pointer<Void> matPointer,
+                    DuoToneParam param)>>('process_mat_to_duo_tone_bytes')
+        .asFunction();
 
 final _CreateMatFilterFunc createMatPointer = _nativeLib
     .lookup<NativeFunction<_CCreateMatFilterFunc>>('create_mat_pointer')

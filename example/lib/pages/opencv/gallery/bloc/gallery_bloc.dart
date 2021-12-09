@@ -170,8 +170,9 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
       String fileName = fileFullName.split('.').first;
 
       final resizeBytes = await assets[assetIndex].thumbDataWithSize(800, 800);
+      final thumnailBytes = await assets[assetIndex].thumbDataWithSize(100, 100);
 
-      if (resizeBytes != null) {
+      if (resizeBytes != null && thumnailBytes != null) {
         final localPath = await _localPath;
         final resizePath = '$localPath/${fileName}_resize.$fileExtension';
 
@@ -180,7 +181,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
         emit(GalleryAssetLoadSuccess(
           file: rezeFile,
           data: state.data,
-          thumnail: event.asset.bytes,
+          thumnail: thumnailBytes,
         ));
         return;
       }

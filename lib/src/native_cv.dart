@@ -54,37 +54,37 @@ class NativeCv {
     });
   }
 
-  Future<void> processImageFilter(ProcessImageArguments args) async {
-    Completer<List<String>?> _resultCompleter = Completer<List<String>?>();
-
-    ///create receiport to get response
-    final port = ReceivePort();
-
-    /// Spawning an isolate
-    Isolate.spawn<Map<String, dynamic>>(
-      _isolateProcessFilter,
-      {
-        'args': args,
-        'sendPort': port.sendPort,
-      },
-      onError: port.sendPort,
-      onExit: port.sendPort,
-    );
-
-    port.listen((message) {
-      ///ensure not call more than one times
-      if (_resultCompleter.isCompleted) {
-        return;
-      }
-
-      _resultCompleter.complete();
-    });
-
-    ///wait for send port return data
-    await _resultCompleter.future;
-
-    ///release for other request
-  }
+  // Future<void> processImageFilter(ProcessImageArguments args) async {
+  //   Completer<List<String>?> _resultCompleter = Completer<List<String>?>();
+  //
+  //   ///create receiport to get response
+  //   final port = ReceivePort();
+  //
+  //   /// Spawning an isolate
+  //   Isolate.spawn<Map<String, dynamic>>(
+  //     _isolateProcessFilter,
+  //     {
+  //       'args': args,
+  //       'sendPort': port.sendPort,
+  //     },
+  //     onError: port.sendPort,
+  //     onExit: port.sendPort,
+  //   );
+  //
+  //   port.listen((message) {
+  //     ///ensure not call more than one times
+  //     if (_resultCompleter.isCompleted) {
+  //       return;
+  //     }
+  //
+  //     _resultCompleter.complete();
+  //   });
+  //
+  //   ///wait for send port return data
+  //   await _resultCompleter.future;
+  //
+  //   ///release for other request
+  // }
 }
 
 Future<String> get _localPath async {
@@ -726,62 +726,248 @@ void _isolateProcessAllFilters(Map<String, dynamic> data) {
   calloc.free(matPointer);
 }
 
-void _isolateProcessFilter(Map<String, dynamic> data) {
-  final ProcessImageArguments args = data['args'];
-  final SendPort sendPort = data['sendPort'];
-
-  final Pointer<Utf8> inputPathPointer = args.inputPath.toNativeUtf8();
-  final Pointer<Utf8> outputPathPointer = args.outputPath.toNativeUtf8();
-
-  switch (args.filter) {
-    case ImageFilter.cartoon:
-      processCartoonFilter(
-        inputPathPointer,
-        outputPathPointer,
-      );
-      break;
-    case ImageFilter.gray:
-      processGrayFilter(
-        inputPathPointer,
-        outputPathPointer,
-      );
-      break;
-    case ImageFilter.sepia:
-      processSepiaFilter(
-        inputPathPointer,
-        outputPathPointer,
-      );
-      break;
-    case ImageFilter.edgePreserving:
-      processEdgePreservingFilter(
-        inputPathPointer,
-        outputPathPointer,
-      );
-      break;
-    case ImageFilter.stylization:
-      processStylizationFilter(
-        inputPathPointer,
-        outputPathPointer,
-      );
-      break;
-    case ImageFilter.original:
-      break;
-
-    case ImageFilter.invert:
-      // TODO: Handle this case.
-      break;
-    case ImageFilter.pencilSketch:
-      // TODO: Handle this case.
-      break;
-    case ImageFilter.sharpen:
-      // TODO: Handle this case.
-      break;
-    case ImageFilter.hdr:
-      // TODO: Handle this case.
-      break;
-  }
-
-  calloc.free(inputPathPointer);
-  calloc.free(outputPathPointer);
-  sendPort.send(null);
-}
+// void _isolateProcessFilter(Map<String, dynamic> data) {
+//   final ProcessImageArguments args = data['args'];
+//   final SendPort sendPort = data['sendPort'];
+//
+//   final Pointer<Utf8> inputPathPointer = args.inputPath.toNativeUtf8();
+//   final Pointer<Utf8> outputPathPointer = args.outputPath.toNativeUtf8();
+//
+//   switch (args.filter) {
+//     case ImageFilter.cartoon:
+//       processCartoonFilter(
+//         inputPathPointer,
+//         outputPathPointer,
+//       );
+//       break;
+//     case ImageFilter.gray:
+//       processGrayFilter(
+//         inputPathPointer,
+//         outputPathPointer,
+//       );
+//       break;
+//     case ImageFilter.sepia:
+//       processSepiaFilter(
+//         inputPathPointer,
+//         outputPathPointer,
+//       );
+//       break;
+//     case ImageFilter.edgePreserving:
+//       processEdgePreservingFilter(
+//         inputPathPointer,
+//         outputPathPointer,
+//       );
+//       break;
+//     case ImageFilter.stylization:
+//       processStylizationFilter(
+//         inputPathPointer,
+//         outputPathPointer,
+//       );
+//       break;
+//     case ImageFilter.original:
+//       break;
+//
+//     case ImageFilter.invert:
+//
+//       break;
+//     case ImageFilter.pencilSketch:
+//
+//       break;
+//     case ImageFilter.sharpen:
+//
+//       break;
+//     case ImageFilter.hdr:
+//
+//       break;
+//     case ImageFilter.duoToneGreenEx1:
+//
+//       break;
+//     case ImageFilter.duoToneGreenEx2:
+//
+//       break;
+//     case ImageFilter.duoToneGreenEx3:
+//
+//       break;
+//     case ImageFilter.duoToneGreenEx4:
+//
+//       break;
+//     case ImageFilter.duoToneGreenEx5:
+//
+//       break;
+//     case ImageFilter.duoToneGreenEx6:
+//
+//       break;
+//     case ImageFilter.duoToneRedEx1:
+//
+//       break;
+//     case ImageFilter.duoToneRedEx2:
+//
+//       break;
+//     case ImageFilter.duoToneRedEx3:
+//
+//       break;
+//     case ImageFilter.duoToneRedEx4:
+//
+//       break;
+//     case ImageFilter.duoToneRedEx5:
+//
+//       break;
+//     case ImageFilter.duoToneRedEx6:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx1:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx2:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx3:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx4:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx5:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx6:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx7:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx8:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx9:
+//
+//       break;
+//     case ImageFilter.duoToneBlueEx10:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx1:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx2:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx3:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx4:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx5:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx6:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx7:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx8:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx9:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenEx10:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx1:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx2:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx3:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx4:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx5:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx6:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx7:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx8:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx9:
+//
+//       break;
+//     case ImageFilter.duoToneBlueGreenDartEx10:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx1:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx2:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx3:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx4:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx5:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx6:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx7:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx8:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx9:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedDartEx10:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx1:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx2:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx3:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx4:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx5:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx6:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx7:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx8:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx9:
+//
+//       break;
+//     case ImageFilter.duoToneGreenRedEx10:
+//
+//       break;
+//   }
+//
+//   calloc.free(inputPathPointer);
+//   calloc.free(outputPathPointer);
+//   sendPort.send(null);
+// }

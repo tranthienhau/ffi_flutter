@@ -1,6 +1,8 @@
+import 'package:ffi_flutter_example/pages/opencv/filter/ui/filter_category_page.dart';
 import 'package:ffi_flutter_example/pages/opencv/filter/ui/filter_page.dart';
 import 'package:ffi_flutter_example/pages/opencv/gallery/bloc/gallery_bloc.dart';
 import 'package:ffi_flutter_example/pages/opencv/gallery/model/gallery_asset.dart';
+import 'package:ffi_flutter_example/pages/opencv/memory_filter/ui/memory_filter_page.dart';
 import 'package:ffi_flutter_example/widgets/loading_indicator.dart';
 import 'package:ffi_flutter_example/widgets/scroll_tab_view.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +48,7 @@ class _GalleryPageState extends State<GalleryPage> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return FilterPage(
+                return MemoryFilterPage(
                   imagePath: state.file.path,
                   thumnail: state.thumnail,
                 );

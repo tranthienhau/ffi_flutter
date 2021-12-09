@@ -50,6 +50,9 @@ long long int get_now() {
     ).count();
 }
 
+// Avoiding name mangling
+extern "C" {
+
 Mat exponential_function(Mat channel, float exp) {
     Mat table(1, 256, CV_8U);
 
@@ -60,12 +63,92 @@ Mat exponential_function(Mat channel, float exp) {
     return channel;
 }
 
-// Avoiding name mangling
-extern "C" {
 FUNCTION_ATTRIBUTE
 const char *version() {
     return CV_VERSION;
 }
+
+
+FUNCTION_ATTRIBUTE
+void *create_mat_pointer_from_bytes(unsigned char *bytes,
+                                   int32_t *imgLengthBytes) {
+    cv::Mat *src = new Mat();
+    int32_t a = *imgLengthBytes;
+    std::vector<unsigned char> m;
+
+    while (a >= 0) {
+        m.push_back(*(bytes++));
+        a--;
+    }
+    *src = cv::imdecode(m, cv::IMREAD_UNCHANGED);
+    if (src->data == nullptr)
+        return nullptr;
+    platform_log("create_mat_pointer_from_bytes: len before:%d  len after:%d  width:%d  height:%d",
+                 *imgLengthBytes, src->step[0] * src->rows,
+                 src->cols, src->rows);
+
+    *imgLengthBytes = src->step[0] * src->rows;
+
+    return src;
+}
+
+FUNCTION_ATTRIBUTE
+unsigned char * process_mat_to_bytes_greyscale(void *imgMat, int32_t *imgLengthBytes) {
+    cv::Mat *src = (Mat *) imgMat;
+    if (src == nullptr || src->data == nullptr)
+        return nullptr;
+    Mat dst =  cv::Mat();
+
+    std::vector<uchar> buf(1);
+    cv::imencode(".bmp", dst, buf);
+    *imgLengthBytes = buf.size();
+
+    unsigned char *ret = (unsigned char *)malloc(buf.size());
+    memcpy(ret, buf.data(), buf.size());
+    return ret;
+}
+
+
+FUNCTION_ATTRIBUTE
+unsigned char * process_mat_to_duo_tone_bytes(void *imgMat,  DuoToneParam param) {
+    Mat duo_tone = ((Mat *) imgMat)->clone();
+    float exp = 1.0f + param.exponent / 100.0f;
+    int s1 = param.s1;
+    int s2 = param.s2;
+    int s3 = param.s3;
+
+    platform_log("apply_mat_duo_tone_filter:  param: %d,s1: %d,s2: %d,s3: %d", param.exponent, s1,
+                 s2, s3);
+
+    Mat channels[3];
+    split(duo_tone, channels);
+
+    for (int i = 0; i < 3; i++) {
+        if ((i == s1) || (i == s2)) {
+            channels[i] = exponential_function(channels[i], exp);
+        } else {
+            if (s3) {
+                channels[i] = exponential_function(channels[i], 2 - exp);
+            } else {
+                channels[i] = Mat::zeros(channels[i].size(), CV_8UC1);
+            }
+        }
+    }
+
+    vector<Mat> newChannels{channels[0], channels[1], channels[2]};
+
+    merge(newChannels, duo_tone);
+
+
+    std::vector<uchar> buf(1);
+    cv::imencode(".bmp", duo_tone, buf);
+//    *imgLengthBytes = buf.size();
+
+    unsigned char *ret = (unsigned char *)malloc(buf.size());
+    memcpy(ret, buf.data(), buf.size());
+    return ret;
+}
+
 
 FUNCTION_ATTRIBUTE
 Mat *create_mat_pointer(char *inputImagePath) {
