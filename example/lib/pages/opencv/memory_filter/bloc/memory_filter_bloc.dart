@@ -105,6 +105,8 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
 
             final transferImage =
                 await _imageTransferService.transfer(originImage);
+            transferList[selectedIndex] =
+                transferList[selectedIndex].copyWith();
 
             emit(
               MemoryFilterLoadSuccess(
@@ -117,24 +119,9 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
                 ),
               ),
             );
-            // add(
-            //   MemoryFilterTransferFilterCompleted(
-            //     transferImage ?? data.originImage,
-            //     selectedIndex,
-            //   ),
-            // );
           } catch (e, stack) {
             logger.e('TransferFilterStyleLoadFailure', e.toString(), stack);
           }
-          // cancellableOperation = CancelableOperation.fromFuture(
-          //   Future.microtask(
-          //     () async {
-          //
-          //     },
-          //   ),
-          // );
-          //
-          // await cancellableOperation?.value;
         },
       );
     }
@@ -394,8 +381,14 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
 
   Future<List<TransferFilter>> _createTransferFilterThumbnails() async {
     final transferFilters = List.generate(
-      26,
-      (index) => TransferFilter(thumbnailPath: 'assets/images/style$index.jpg'),
+      27,
+      (index) {
+        String path = 'assets/images/style$index.jpg';
+        if (index == 26) {
+          path = 'assets/images/style$index.jpeg';
+        }
+        return TransferFilter(thumbnailPath: path);
+      },
     );
 
     return transferFilters;

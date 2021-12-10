@@ -169,7 +169,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
       String fileExtension = fileFullName.split('.').last;
       String fileName = fileFullName.split('.').first;
 
-      final resizeBytes = await assets[assetIndex].thumbDataWithSize(800, 800);
+      final resizeBytes = await assets[assetIndex].thumbDataWithSize(512, 512);
       final thumnailBytes = await assets[assetIndex].thumbDataWithSize(100, 100);
 
       if (resizeBytes != null && thumnailBytes != null) {
