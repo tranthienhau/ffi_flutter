@@ -104,7 +104,7 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
             await _imageTransferService.selectStyle(styleBytes);
 
             final transferImage =
-                await _imageTransferService.transfer(originImage);
+                await _imageTransferService.transfer(originImage, 0.4);
             transferList[selectedIndex] =
                 transferList[selectedIndex].copyWith();
 
@@ -288,95 +288,7 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
       },
     );
 
-    // final s1List = List.generate(3, (index) => index);
-    // final s2List = List.generate(4, (index) => index);
-    // final s3List = List.generate(2, (index) => index);
-    // final exponentList = List.generate(10, (index) => index);
 
-    // final List<ColorFilter> colorFilters = [];
-    // colorFilters.add(ColorFilter(
-    //   thumbnailFilter: originBytes,
-    //   originFilter: originBytes,
-    //   filter: ImageFilter.original,
-    // ));
-
-    // for (int exponent in exponentList) {
-    //   for (int s1 in s1List) {
-    //     for (int s2 in s2List) {
-    //       for (int s3 in s3List) {
-    //         final filterBytes =
-    //             await _originProcesssFilter.processDuoToneFilter(
-    //           exponent: exponent.toDouble(),
-    //           s1: s1,
-    //           s2: s2,
-    //           s3: s3,
-    //         );
-    //
-    //         if (filterBytes != null) {
-    //           colorFilters.add(
-    //             ColorFilter(
-    //               thumbnailFilter: filterBytes,
-    //               filter: ImageFilter.original,
-    //             ),
-    //           );
-    //
-    //           final data = state.data;
-    //
-    //           if(data != null){
-    //             emit(
-    //               MemoryFilterLoadSuccess(
-    //                 data.copyWith(
-    //                   colorFilterData: data.colorFilterData.copyWith(
-    //                     colorFilterList: colorFilters,
-    //                     selectedIndex: data.colorFilterData.selectedIndex
-    //                   )
-    //                 )
-    //                 // MemoryFilterData(
-    //                 //   originImage: originBytes,
-    //                 //   transferFilterData: TransferFilterListData(
-    //                 //     transferFilterList: transferFilters,
-    //                 //     selectedIndex: -1,
-    //                 //   ),
-    //                 //   colorFilterData: ColorFilterListData(
-    //                 //     colorFilterList: colorFilters,
-    //                 //     selectedIndex: -1,
-    //                 //   ),
-    //                 //   categories: [
-    //                 //     'Color',
-    //                 //     'Cartoon',
-    //                 //   ],
-    //                 //   category: 'Color',
-    //                 // ),
-    //               ),
-    //             );
-    //             continue;
-    //           }
-    //
-    //           emit(
-    //             MemoryFilterLoadSuccess(
-    //               MemoryFilterData(
-    //                 originImage: originBytes,
-    //                 transferFilterData: TransferFilterListData(
-    //                   transferFilterList: transferFilters,
-    //                   selectedIndex: -1,
-    //                 ),
-    //                 colorFilterData: ColorFilterListData(
-    //                   colorFilterList: colorFilters,
-    //                   selectedIndex: -1,
-    //                 ),
-    //                 categories: [
-    //                   'Color',
-    //                   'Cartoon',
-    //                 ],
-    //                 category: 'Color',
-    //               ),
-    //             ),
-    //           );
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   }
 
   Future<List<TransferFilter>> _createTransferFilterThumbnails() async {

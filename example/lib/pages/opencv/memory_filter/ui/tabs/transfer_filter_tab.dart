@@ -24,8 +24,7 @@ class TransferFilterTab extends StatelessWidget {
 
           child = Image.memory(
             originImage,
-            width: 100,
-            height: 100,
+
             gaplessPlayback: true,
             fit: BoxFit.fitWidth,
           );
@@ -33,8 +32,7 @@ class TransferFilterTab extends StatelessWidget {
           if (transferImage != null) {
             child = Image.memory(
               transferImage,
-              width: 100,
-              height: 100,
+
               gaplessPlayback: true,
               fit: BoxFit.fitWidth,
             );
@@ -69,6 +67,8 @@ class TransferFilterTab extends StatelessWidget {
                                 .add(MemoryFilterTransferFiltered(imagePath));
                           },
                           child: Container(
+                            width: 100,
+                            height: 100,
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
                               border: transferFilterData.selectedIndex == index
@@ -81,7 +81,7 @@ class TransferFilterTab extends StatelessWidget {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(imagePath),
+                              child: Image.asset(imagePath, fit: BoxFit.cover,),
                             ),
                           ),
                         );
