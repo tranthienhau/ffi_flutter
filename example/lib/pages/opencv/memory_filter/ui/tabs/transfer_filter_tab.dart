@@ -24,6 +24,8 @@ class TransferFilterTab extends StatelessWidget {
 
           child = Image.memory(
             originImage,
+            width: 100,
+            height: 100,
             gaplessPlayback: true,
             fit: BoxFit.fitWidth,
           );
@@ -31,6 +33,8 @@ class TransferFilterTab extends StatelessWidget {
           if (transferImage != null) {
             child = Image.memory(
               transferImage,
+              width: 100,
+              height: 100,
               gaplessPlayback: true,
               fit: BoxFit.fitWidth,
             );

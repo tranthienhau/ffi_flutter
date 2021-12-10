@@ -97,24 +97,26 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget _buildGalleryPage(
       List<GalleryAsset>? assets, String galleryName, BuildContext context) {
     if (assets != null) {
-      return Wrap(
-        children: assets
-            .map(
-              (asset) => InkWell(
-                onTap: () {
-                  BlocProvider.of<GalleryBloc>(context).add(GalleryAssetLoaded(
-                    asset: asset,
-                    galleryName: galleryName,
-                  ));
-                },
-                child: Image.memory(
-                  asset.bytes,
-                  width: MediaQuery.of(context).size.width / 3,
-                  fit: BoxFit.cover,
+      return SingleChildScrollView(
+        child: Wrap(
+          children: assets
+              .map(
+                (asset) => InkWell(
+                  onTap: () {
+                    BlocProvider.of<GalleryBloc>(context).add(GalleryAssetLoaded(
+                      asset: asset,
+                      galleryName: galleryName,
+                    ));
+                  },
+                  child: Image.memory(
+                    asset.bytes,
+                    width: MediaQuery.of(context).size.width / 3,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-            )
-            .toList(),
+              )
+              .toList(),
+        ),
       );
     }
 

@@ -381,10 +381,10 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
 
   Future<List<TransferFilter>> _createTransferFilterThumbnails() async {
     final transferFilters = List.generate(
-      27,
+      28,
       (index) {
         String path = 'assets/images/style$index.jpg';
-        if (index == 26) {
+        if (index >= 26) {
           path = 'assets/images/style$index.jpeg';
         }
         return TransferFilter(thumbnailPath: path);
