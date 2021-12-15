@@ -64,7 +64,7 @@ class TransferFilterTab extends StatelessWidget {
                         return GestureDetector(
                           onTap: () {
                             BlocProvider.of<MemoryFilterBloc>(context)
-                                .add(MemoryFilterTransferFiltered(imagePath));
+                                .add(MemoryFilterTransferFiltered(index));
                           },
                           child: Container(
                             width: 100,

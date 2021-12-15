@@ -8,13 +8,17 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 class TensorflowTransferService implements ImageTransferService {
   final _predictionModelFile = 'models/prediction_model.tflite';
+  final _newTransferModelFile = 'models/converted_model_400.tflite';
   final _transformModelFile = 'models/transfer_model.tflite';
 
   static const int MODEL_TRANSFER_IMAGE_SIZE = 384;
   static const int MODEL_PREDICTION_IMAGE_SIZE = 256;
   static const int MODEL_PREDICTION_BLEND_SIZE = 256;
 
+  static const int MODEL_NEW_STYLE_SIZE = 400;
+
   late Interpreter interpreterPrediction;
+  late Interpreter newInterpreterTransfer;
   late Interpreter interpreterTransform;
 
   final contentBottleneck = [
@@ -57,11 +61,14 @@ class TensorflowTransferService implements ImageTransferService {
     ///Load model
     final options = InterpreterOptions();
     options.threads = 4;
-    options.useNnApiForAndroid = true;
+    // options.useNnApiForAndroid = true;
+    newInterpreterTransfer =
+        await Interpreter.fromAsset(_newTransferModelFile, options: options);
     interpreterPrediction =
         await Interpreter.fromAsset(_predictionModelFile, options: options);
     interpreterTransform =
         await Interpreter.fromAsset(_transformModelFile, options: options);
+    // newInterpreterTransfer.close();
   }
 
   @override
@@ -84,9 +91,73 @@ class TensorflowTransferService implements ImageTransferService {
 
     outputsForPrediction[0] = styleBottleneck;
 
+    // final newBytes = Uint8List.fromList(modelPredictionInput);
+
     // style predict model
     interpreterPrediction.runForMultipleInputs(
         inputsForPrediction, outputsForPrediction);
+  }
+
+  final newOutputImageData = [
+    List.generate(
+      MODEL_NEW_STYLE_SIZE,
+      (index) => List.generate(
+        MODEL_NEW_STYLE_SIZE,
+        (index) => List.generate(3, (index) => 0.0),
+      ),
+    ),
+  ];
+
+  @override
+  Future<Uint8List?> transferNewModel(Uint8List originData) async {
+    var originImage = img.decodeImage(originData);
+
+    var modelPredictionImage = img.copyResize(originImage!,
+        width: MODEL_NEW_STYLE_SIZE, height: MODEL_NEW_STYLE_SIZE);
+
+    var modelPredictionInput =
+        _imageToByteListUInt8(modelPredictionImage, MODEL_NEW_STYLE_SIZE, 0, 1);
+
+    Completer<void> _resultCompleter = Completer<void>();
+
+    ///create receiport to get response
+    final port = ReceivePort();
+
+    /// Spawning an isolate
+    Isolate.spawn<Map<String, dynamic>>(
+      _isolateTransferNew,
+      {
+        'modelTransferInput': modelPredictionInput,
+        'inputSize': MODEL_NEW_STYLE_SIZE,
+        'interpreterTransform': newInterpreterTransfer.address,
+        'originImage': originImage,
+        'outputImageData': newOutputImageData,
+        'sendPort': port.sendPort,
+      },
+      onError: port.sendPort,
+      onExit: port.sendPort,
+    );
+
+    late Uint8List bytes;
+    port.listen((message) {
+      ///ensure not call more than one times
+      if (_resultCompleter.isCompleted) {
+        return;
+      }
+
+      if (message is Uint8List) {
+        bytes = message;
+      }
+
+      if (message == null) {
+        _resultCompleter.complete();
+      }
+    });
+
+    await _resultCompleter.future;
+
+    ///wait for send port return data
+    return bytes;
   }
 
   @override
@@ -239,6 +310,13 @@ class TensorflowTransferService implements ImageTransferService {
           modelTransferImage, MODEL_TRANSFER_IMAGE_SIZE, 0, 255);
     }
   }
+
+  @override
+  Future<void> close() async {
+    interpreterPrediction.close();
+    interpreterTransform.close();
+    newInterpreterTransfer.close();
+  }
 }
 
 void _isolateTransfer(Map<String, dynamic> data) {
@@ -300,6 +378,64 @@ void _isolateTransfer(Map<String, dynamic> data) {
       width: originImage.width, height: originImage.height);
 
   sendPort.send(Uint8List.fromList(img.encodeJpg(resultImage)));
+}
+
+void _isolateTransferNew(Map<String, dynamic> data) {
+  final modelTransferInput = data['modelTransferInput'];
+
+  final int interpreterTransformAddress = data['interpreterTransform'];
+
+  final originImage = data['originImage'];
+  final inputSize = data['inputSize'];
+
+  final outputImageData = data['outputImageData'];
+
+  final SendPort sendPort = data['sendPort'];
+
+  Interpreter interpreterTransform =
+      Interpreter.fromAddress(interpreterTransformAddress);
+  print('start');
+  // style_bottleneck 1 1 100
+  final outputsForPrediction = <int, Object>{};
+
+  outputsForPrediction[0] = outputImageData;
+
+  final inputsForPrediction = <Object>[modelTransferInput];
+
+  // style predict model
+  interpreterTransform.runForMultipleInputs(
+      inputsForPrediction, outputsForPrediction);
+
+  final outputImage = _convertArrayToImageNew(outputImageData, inputSize);
+
+  final rotateOutputImage = img.copyRotate(outputImage, 90);
+
+  final flipOutputImage = img.flipHorizontal(rotateOutputImage);
+
+  final resultImage = img.copyResize(
+    flipOutputImage,
+    width: originImage.width,
+    height: originImage.height,
+  );
+
+  final imageBytes = Uint8List.fromList(img.encodeJpg(resultImage));
+
+  sendPort.send(imageBytes);
+}
+
+img.Image _convertArrayToImageNew(
+    List<List<List<List<double>>>> imageArray, int inputSize) {
+  img.Image image = img.Image.rgb(inputSize, inputSize);
+  for (var x = 0; x < imageArray[0].length; x++) {
+    for (var y = 0; y < imageArray[0][0].length; y++) {
+      var r = (imageArray[0][x][y][0]).toInt();
+      var g = (imageArray[0][x][y][1]).toInt();
+      var b = (imageArray[0][x][y][2]).toInt();
+      image.setPixelRgba(x, y, r, g, b);
+    }
+  }
+
+  return image;
 }
 
 img.Image _convertArrayToImage(

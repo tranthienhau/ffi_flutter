@@ -30,9 +30,10 @@ class MemoryFilterColorFiltered extends MemoryFilterEvent {
 
 
 class MemoryFilterTransferFiltered extends MemoryFilterEvent {
-  final String stylePath;
+  // final String stylePath;
+  final int index;
 
-  MemoryFilterTransferFiltered(this.stylePath);
+  MemoryFilterTransferFiltered(this.index);
 }
 
 class MemoryFilterTransferFilterCompleted extends MemoryFilterEvent {

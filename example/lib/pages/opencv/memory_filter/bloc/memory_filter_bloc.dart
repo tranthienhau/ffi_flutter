@@ -88,8 +88,8 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
     final data = state.data;
     if (data != null) {
       final transferList = data.transferFilterData.transferFilterList;
-      final selectedIndex = transferList
-          .indexWhere((element) => element.thumbnailPath == event.stylePath);
+
+      final selectedIndex = event.index;
 
       await processTensorflowLock.synchronized(
         () async {
@@ -98,15 +98,20 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
           Uint8List originImage = data.originImage;
 
           try {
-            final styleImageByteData = await rootBundle.load(event.stylePath);
-            final styleBytes = styleImageByteData.buffer.asUint8List();
+            Uint8List? transferImage;
+            if (selectedIndex == transferList.length - 1) {
+              transferImage =
+                  await _imageTransferService.transferNewModel(originImage);
+            } else {
+              final styleImageByteData = await rootBundle
+                  .load(transferList[selectedIndex].thumbnailPath);
+              final styleBytes = styleImageByteData.buffer.asUint8List();
 
-            await _imageTransferService.selectStyle(styleBytes);
+              await _imageTransferService.selectStyle(styleBytes);
 
-            final transferImage =
-                await _imageTransferService.transfer(originImage, 0.4);
-            transferList[selectedIndex] =
-                transferList[selectedIndex].copyWith();
+              transferImage = await _imageTransferService.transfer(originImage);
+            }
+
 
             emit(
               MemoryFilterLoadSuccess(
@@ -287,8 +292,6 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
         }
       },
     );
-
-
   }
 
   Future<List<TransferFilter>> _createTransferFilterThumbnails() async {
@@ -303,6 +306,10 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
       },
     );
 
+    transferFilters
+        .add(const TransferFilter(thumbnailPath: 'assets/images/mosaic.jpg'));
+    transferFilters
+        .add(const TransferFilter(thumbnailPath: 'assets/images/mosaic.jpg'));
     return transferFilters;
   }
 
@@ -349,9 +356,10 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _thumbnaiProcessFilter.dispose();
     _originProcesssFilter.dispose();
+    await _imageTransferService.close();
     return super.close();
   }
 }
