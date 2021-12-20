@@ -58,7 +58,7 @@ class TransferFilterBloc
     final imageByteData = await _readFileByte(event.imagePath);
     final bytes = imageByteData.buffer.asUint8List();
 
-    await _imageTransferService.loadImage(bytes);
+    // await _imageTransferService.loadImage(bytes);
     emit(
       TransferFilterLoadSuccess(
         TransferFilterData(
@@ -106,14 +106,17 @@ class TransferFilterBloc
           final styleImageByteData = await rootBundle.load(event.stylePath);
           final styleBytes = styleImageByteData.buffer.asUint8List();
 
-          await _imageTransferService.selectStyle(styleBytes);
+          // await _imageTransferService.selectStyle(styleBytes);
 
           final List<Uint8List> transferList = [];
           for (int i = 0; i <= 10; i++) {
             _transferConpleter = Completer<void>();
             final transferImage = await _imageTransferService.transfer(
-                originImage, (10 - i) / 10.0);
-            print('transferImage: $i');
+              styleData: styleBytes,
+                originData: data.originImage,
+                contentBlendingRatio:  (10 - i) / 10.0
+              );
+            // print('transferImage: $i');
             transferList.add(transferImage!);
             _transferConpleter?.complete();
             if(_isCancel){

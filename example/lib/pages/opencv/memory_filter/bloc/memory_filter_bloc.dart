@@ -107,9 +107,12 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
                   .load(transferList[selectedIndex].thumbnailPath);
               final styleBytes = styleImageByteData.buffer.asUint8List();
 
-              await _imageTransferService.selectStyle(styleBytes);
+              // await _imageTransferService.selectStyle(styleBytes);
 
-              transferImage = await _imageTransferService.transfer(originImage);
+              transferImage = await _imageTransferService.transfer(
+                originData: originImage,
+                styleData: styleBytes,
+              );
             }
 
 
@@ -241,7 +244,7 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
 
     await _imageTransferService.init();
 
-    await _imageTransferService.loadImage(originBytes);
+    // await _imageTransferService.loadImage(originBytes);
     final templateColorFilters = ImageFilter.values
         .map((filter) => ColorFilter(
               filter: filter,
