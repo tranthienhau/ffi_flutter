@@ -91,6 +91,20 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
 
       final selectedIndex = event.index;
 
+      final originFilter = transferList[selectedIndex].originFilter;
+      if (originFilter != null) {
+        emit(
+          MemoryFilterLoadSuccess(
+            data.copyWith(
+              transferFilterData: data.transferFilterData.copyWith(
+                selectedIndex: selectedIndex,
+              ),
+              transferImage: originFilter,
+            ),
+          ),
+        );
+        return;
+      }
       await processTensorflowLock.synchronized(
         () async {
           emit(MemoryFilterTransferFilterBusy(data));
@@ -115,13 +129,16 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
               );
             }
 
+            transferList[selectedIndex] = transferList[selectedIndex].copyWith(
+              originFilter: transferImage,
+            );
 
             emit(
               MemoryFilterLoadSuccess(
                 data.copyWith(
                   transferFilterData: data.transferFilterData.copyWith(
                     selectedIndex: selectedIndex,
-                    // transferFilterList: transferList,
+                    transferFilterList: transferList,
                   ),
                   transferImage: transferImage ?? data.originImage,
                 ),
