@@ -1,8 +1,11 @@
+import 'package:ffi_flutter/ffi_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:native_add_example/pages/aws/aws_example_page.dart';
-import 'package:native_add_example/pages/curl/curl_example_page.dart';
-import 'package:native_add_example/pages/opencv/gallery/ui/gallery_page.dart';
+
 import 'package:overlay_support/overlay_support.dart';
+
+import 'pages/aws/aws_example_page.dart';
+import 'pages/curl/curl_example_page.dart';
+import 'pages/opencv/gallery/ui/gallery_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,9 +21,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return OverlaySupport.global(
+    return const OverlaySupport.global(
       child: MaterialApp(
-        home: _buildBodyOpencv(),
+        home: GalleryPage(),
       ),
     );
   }
@@ -30,46 +33,55 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildNavigateButton(
-              title: 'Curl example page',
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return const CurlExamplePage();
-                    },
-                  ),
-                );
-              }),
-          _buildNavigateButton(
-            title: 'Aws example page',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return const AwsExamplePage();
-                  },
-                ),
-              );
-            },
-          ),
-          _buildNavigateButton(
-            title: 'Opencv example page',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return const GalleryPage();
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+      body: Builder(
+        builder: (context) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildNavigateButton(
+                  title: 'Curl example page',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return const CurlExamplePage();
+                        },
+                      ),
+                    );
+                  }),
+              // _buildNavigateButton(
+              //   title: 'Aws example page',
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (BuildContext context) {
+              //           return const AwsExamplePage();
+              //         },
+              //       ),
+              //     );
+              //   },
+              // ),
+              _buildNavigateButton(
+                  title: 'Camera filter page',
+                  onPressed: () {
+                    FfiFlutter.openCameraFilter();
+                  }),
+              _buildNavigateButton(
+                title: 'Gallayer filter page',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return const GalleryPage();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        }
       ),
     );
   }

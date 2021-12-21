@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ffi_flutter/native_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:native_ffi/native_ffi.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CurlExamplePage extends StatefulWidget {

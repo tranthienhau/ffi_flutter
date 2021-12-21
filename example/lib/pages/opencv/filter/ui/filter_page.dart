@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ffi_flutter/native_ffi.dart';
+import 'package:ffi_flutter_example/pages/opencv/filter/bloc/filter_bloc.dart';
+import 'package:ffi_flutter_example/pages/opencv/filter/bloc/normal_filter/normal_filter_bloc.dart';
+import 'package:ffi_flutter_example/widgets/loading_indicator.dart';
+import 'package:ffi_flutter_example/widgets/photo_gallery/app_photo_gallery.dart';
+import 'package:ffi_flutter_example/widgets/toast_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:native_add_example/pages/opencv/filter/bloc/filter_bloc.dart';
-import 'package:native_add_example/widgets/loading_indicator.dart';
-import 'package:native_add_example/widgets/photo_gallery/app_photo_gallery.dart';
-import 'package:native_add_example/widgets/toast_utils.dart';
-import 'package:native_ffi/native_ffi.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class FilterPage extends StatefulWidget {
@@ -21,12 +22,14 @@ class FilterPage extends StatefulWidget {
   _FilterPageState createState() => _FilterPageState();
 }
 
-class _FilterPageState extends State<FilterPage> {
-  final FilterBloc _filterBloc = FilterBloc();
+class _FilterPageState extends State<FilterPage>
+    with AutomaticKeepAliveClientMixin {
+  late NormalFilterBloc _filterBloc;
 
   @override
   void initState() {
-    _filterBloc.add(FilterLoaded(
+    _filterBloc = BlocProvider.of<NormalFilterBloc>(context);
+    _filterBloc.add(NormalFilterLoaded(
       imagePath: widget.imagePath,
       thumnail: widget.thumnail,
     ));
@@ -41,44 +44,33 @@ class _FilterPageState extends State<FilterPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
       body: _buildBody(),
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      title: const Text('Image filter page'),
-      actions: [
-        PopupMenuButton<String>(
-          onSelected: (String result) {
-            _filterBloc.add(FilterUpload());
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            const PopupMenuItem<String>(
-              value: 'Upload',
-              child: Text('Upload selection image'),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
   Widget _buildBody() {
-    return BlocConsumer<FilterBloc, FilterState>(
+    return BlocConsumer<NormalFilterBloc, NormalFilterState>(
       bloc: _filterBloc,
+      buildWhen: (_, current) => current is! NormalFilterSelectionChange,
       listener: (context, state) {
-        if (state is FilterUploadSuccess) {
+        final data = BlocProvider.of<FilterBloc>(context).state.data;
+        final filterBytes = state.data.filterBytes;
+        if (data.filterType == 'Normal') {
+          BlocProvider.of<FilterBloc>(context)
+              .add(FilterCurrentImageLoaded(filterBytes));
+        }
+
+        if (state is NormalFilterUploadSuccess) {
           ToastUtils.done(
             subTitle: 'Upload successfully',
           );
           return;
         }
 
-        if (state is FilterUploadFailure) {
+        if (state is NormalFilterUploadFailure) {
           ToastUtils.error(error: 'Upload failed: ${state.error}');
           return;
         }
@@ -86,7 +78,7 @@ class _FilterPageState extends State<FilterPage> {
       builder: (context, state) {
         // final imageFilterMap = state.data.imageFilterMap;
         final imageFilterDataMap = state.data.imageFilterDataMap;
-        if (state is FilterLoading) {
+        if (state is NormalFilterLoading) {
           return const Center(
             child: LoadingIndicator(
               backgroundColor: Colors.white,
@@ -97,9 +89,12 @@ class _FilterPageState extends State<FilterPage> {
         return Stack(
           children: [
             PreviewPhotoGallery(
-              onPageChanged: (int index) {},
+              onPageChanged: (int index) {
+                _filterBloc.add(NormalFilterImageSelected(index));
+              },
               previewBuilder: (BuildContext context, int index) {
-                final ImageFilter filter = imageFilterDataMap.keys.elementAt(index);
+                final ImageFilter filter =
+                    imageFilterDataMap.keys.elementAt(index);
                 final filterData = imageFilterDataMap[filter];
                 if (filterData != null) {
                   return Container(
@@ -162,7 +157,8 @@ class _FilterPageState extends State<FilterPage> {
               },
               itemCount: imageFilterDataMap.length,
               selectedPreviewBuilder: (BuildContext context, int index) {
-                final ImageFilter filter = imageFilterDataMap.keys.elementAt(index);
+                final ImageFilter filter =
+                    imageFilterDataMap.keys.elementAt(index);
                 final filterData = imageFilterDataMap[filter];
                 if (filterData != null) {
                   return Container(
@@ -196,7 +192,8 @@ class _FilterPageState extends State<FilterPage> {
                 );
               },
               photoBuilder: (BuildContext context, int index) {
-                final ImageFilter filter = imageFilterDataMap.keys.elementAt(index);
+                final ImageFilter filter =
+                    imageFilterDataMap.keys.elementAt(index);
                 final original = imageFilterDataMap[filter]?.original;
                 if (original != null) {
                   return FileImage(File(original));
@@ -206,7 +203,7 @@ class _FilterPageState extends State<FilterPage> {
               },
               initialPage: 0,
             ),
-            if (state is FilterBusy)
+            if (state is NormalFilterBusy)
               LoadingIndicator(
                 backgroundColor: Colors.grey.withOpacity(0.5),
               ),
@@ -215,4 +212,7 @@ class _FilterPageState extends State<FilterPage> {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

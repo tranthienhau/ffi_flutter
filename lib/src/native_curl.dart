@@ -3,7 +3,9 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_ffi/native_ffi.dart';
+
+import '../native_ffi.dart';
+
 
 ///Connect to native curl in c++
 class NativeCurl {

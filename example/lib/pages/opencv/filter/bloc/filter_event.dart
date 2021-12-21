@@ -3,39 +3,16 @@ part of 'filter_bloc.dart';
 @immutable
 abstract class FilterEvent {}
 
-///Load all filter of [imagePath]
-class FilterLoaded extends FilterEvent {
-  FilterLoaded({required this.imagePath, required this.thumnail});
+class FilterPageChanged extends FilterEvent {
+  final String pageCategory;
 
-  final String imagePath;
-  final Uint8List thumnail;
+  FilterPageChanged(this.pageCategory);
 }
 
-class FilterImageSelected extends FilterEvent {
-  FilterImageSelected(this.index);
+class FilterCurrentImageLoaded extends FilterEvent {
+  final Uint8List? filterImage;
 
-  final int index;
+  FilterCurrentImageLoaded(this.filterImage);
 }
 
-class FilterUpload extends FilterEvent {}
-
-class FilterThumnailUpdated extends FilterEvent {
-  final String thumnail;
-  final ImageFilter filter;
-
-  FilterThumnailUpdated({required this.thumnail , required this.filter});
-}
-
-class FilterOriginalUpdated extends FilterEvent {
-  final String original;
-  final ImageFilter filter;
-
-  FilterOriginalUpdated({required this.original , required this.filter});
-}
-
-
-class FilterUpdated extends FilterEvent {
-  FilterUpdated(this.filterData);
-
-  final ImageFilterData filterData;
-}
+class FilterCurrentImageSaved extends FilterEvent {}

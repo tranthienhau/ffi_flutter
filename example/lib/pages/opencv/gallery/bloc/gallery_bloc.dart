@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:ffi_flutter_example/pages/opencv/gallery/model/gallery_asset.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
-import 'package:native_add_example/pages/opencv/gallery/model/gallery_asset.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -169,9 +169,10 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
       String fileExtension = fileFullName.split('.').last;
       String fileName = fileFullName.split('.').first;
 
-      final resizeBytes = await assets[assetIndex].thumbDataWithSize(800, 800);
+      final resizeBytes = await assets[assetIndex].thumbDataWithSize(512, 512);
+      final thumnailBytes = await assets[assetIndex].thumbDataWithSize(100, 100);
 
-      if (resizeBytes != null) {
+      if (resizeBytes != null && thumnailBytes != null) {
         final localPath = await _localPath;
         final resizePath = '$localPath/${fileName}_resize.$fileExtension';
 
@@ -180,7 +181,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
         emit(GalleryAssetLoadSuccess(
           file: rezeFile,
           data: state.data,
-          thumnail: event.asset.bytes,
+          thumnail: thumnailBytes,
         ));
         return;
       }

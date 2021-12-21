@@ -9,3 +9,4 @@ export 'src/native_aws.dart';
 export 'src/native_curl.dart';
 export 'src/native_cv.dart';
 export 'src/native_io.dart';
+export 'src/native_image_filter.dart';

@@ -1,10 +1,13 @@
+import 'package:ffi_flutter_example/pages/opencv/filter/ui/filter_category_page.dart';
+import 'package:ffi_flutter_example/pages/opencv/filter/ui/filter_page.dart';
+import 'package:ffi_flutter_example/pages/opencv/gallery/bloc/gallery_bloc.dart';
+import 'package:ffi_flutter_example/pages/opencv/gallery/model/gallery_asset.dart';
+import 'package:ffi_flutter_example/pages/opencv/memory_filter/ui/memory_filter_page.dart';
+import 'package:ffi_flutter_example/widgets/loading_indicator.dart';
+import 'package:ffi_flutter_example/widgets/scroll_tab_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:native_add_example/pages/opencv/filter/ui/filter_page.dart';
-import 'package:native_add_example/pages/opencv/gallery/bloc/gallery_bloc.dart';
-import 'package:native_add_example/pages/opencv/gallery/model/gallery_asset.dart';
-import 'package:native_add_example/widgets/loading_indicator.dart';
-import 'package:native_add_example/widgets/scroll_tab_view.dart';
+
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({Key? key}) : super(key: key);
@@ -45,7 +48,7 @@ class _GalleryPageState extends State<GalleryPage> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return FilterPage(
+                return MemoryFilterPage(
                   imagePath: state.file.path,
                   thumnail: state.thumnail,
                 );
@@ -94,24 +97,26 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget _buildGalleryPage(
       List<GalleryAsset>? assets, String galleryName, BuildContext context) {
     if (assets != null) {
-      return Wrap(
-        children: assets
-            .map(
-              (asset) => InkWell(
-                onTap: () {
-                  BlocProvider.of<GalleryBloc>(context).add(GalleryAssetLoaded(
-                    asset: asset,
-                    galleryName: galleryName,
-                  ));
-                },
-                child: Image.memory(
-                  asset.bytes,
-                  width: MediaQuery.of(context).size.width / 3,
-                  fit: BoxFit.cover,
+      return SingleChildScrollView(
+        child: Wrap(
+          children: assets
+              .map(
+                (asset) => InkWell(
+                  onTap: () {
+                    BlocProvider.of<GalleryBloc>(context).add(GalleryAssetLoaded(
+                      asset: asset,
+                      galleryName: galleryName,
+                    ));
+                  },
+                  child: Image.memory(
+                    asset.bytes,
+                    width: MediaQuery.of(context).size.width / 3,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-            )
-            .toList(),
+              )
+              .toList(),
+        ),
       );
     }
 

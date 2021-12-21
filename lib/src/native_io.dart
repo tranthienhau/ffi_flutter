@@ -4,7 +4,9 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:native_ffi/native_ffi.dart';
+
+import '../native_ffi.dart';
+
 
 ///Call native IO for write and read file
 class NativeIO {
@@ -47,6 +49,7 @@ void _isolateReadFile(Map<String, dynamic> data) {
   /// get data
   final String filePath = data['filePath'];
   final SendPort sendPort = data['sendPort'];
+
 
   ///convert url and certPath to Pointer to pass to native
   final Pointer<Utf8> filePathPointer = filePath.toNativeUtf8();

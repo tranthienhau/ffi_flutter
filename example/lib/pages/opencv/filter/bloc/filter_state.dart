@@ -1,86 +1,53 @@
 part of 'filter_bloc.dart';
 
 class FilterData {
-  final String thumnail;
-  final String? original;
-
   const FilterData({
-    required this.thumnail,
-    this.original,
+    required this.filterType,
+    required this.filterCategories,
+     this.filterImage,
   });
 
   FilterData copyWith({
-    String? thumnail,
-    String? original,
+    String? filterType,
+    List<String>? filterCategories,
+    Uint8List? filterImage,
   }) {
     return FilterData(
-      thumnail: thumnail ?? this.thumnail,
-      original: original ?? this.original,
+      filterType: filterType ?? this.filterType,
+      filterImage: filterImage ?? this.filterImage,
+      filterCategories: filterCategories ?? this.filterCategories,
     );
   }
-}
 
-class FilterBlocData {
-  const FilterBlocData({
-    // required this.imageFilterMap,
-    required this.selectionIndex,
-    required this.imageFilterDataMap,
-  });
-
-  // final Map<ImageFilter, String?> imageFilterMap;
-  final Map<ImageFilter, FilterData?> imageFilterDataMap;
-  final int selectionIndex;
-
-  FilterBlocData copyWith({
-    // Map<ImageFilter, String?>? imageFilterMap,
-    Map<ImageFilter, FilterData?>? imageFilterDataMap,
-    int? selectionIndex,
-  }) {
-    return FilterBlocData(
-      imageFilterDataMap: imageFilterDataMap ?? this.imageFilterDataMap,
-      // imageFilterMap: imageFilterMap ?? this.imageFilterMap,
-      selectionIndex: selectionIndex ?? this.selectionIndex,
-    );
-  }
+  final String filterType;
+  final Uint8List? filterImage;
+  final List<String> filterCategories;
 }
 
 @immutable
 abstract class FilterState {
   const FilterState(this.data);
 
-  ///Data filter contain key: type of filter and value:imagePath
-  final FilterBlocData data;
+  final FilterData data;
 }
 
 class FilterLoading extends FilterState {
-  const FilterLoading(FilterBlocData data) : super(data);
+  const FilterLoading(FilterData data) : super(data);
 }
 
-class FilterSelectionChange extends FilterState {
-  const FilterSelectionChange(FilterBlocData data) : super(data);
-}
-
-class FilterUploadSuccess extends FilterState {
-  const FilterUploadSuccess(FilterBlocData data) : super(data);
-}
-
-///State call [FilterApplied] and complete apply filter
 class FilterLoadSuccess extends FilterState {
-  const FilterLoadSuccess(FilterBlocData data) : super(data);
-}
-
-class FilterUpdateSuccess extends FilterState {
-  const FilterUpdateSuccess(FilterBlocData data) : super(data);
+  const FilterLoadSuccess(FilterData data) : super(data);
 }
 
 class FilterBusy extends FilterState {
-  const FilterBusy(FilterBlocData data) : super(data);
+  const FilterBusy(FilterData data) : super(data);
 }
 
-///State call [FilterApplied] and raise exception
-class FilterUploadFailure extends FilterState {
-  const FilterUploadFailure({required FilterBlocData data, required this.error})
-      : super(data);
+class FilterSaveSuccess extends FilterState {
+  const FilterSaveSuccess(FilterData data) : super(data);
+}
 
+class FilterSaveFailure extends FilterState {
+  const FilterSaveFailure({required this.error, required FilterData data}) : super(data);
   final String error;
 }
