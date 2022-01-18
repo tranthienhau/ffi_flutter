@@ -1,4 +1,5 @@
 import 'package:ffi_flutter/ffi_flutter.dart';
+import 'package:ffi_flutter_example/pages/intro/introduce_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:overlay_support/overlay_support.dart';
@@ -23,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return const OverlaySupport.global(
       child: MaterialApp(
-        home: GalleryPage(),
+        home: IntroducePage(),
       ),
     );
   }

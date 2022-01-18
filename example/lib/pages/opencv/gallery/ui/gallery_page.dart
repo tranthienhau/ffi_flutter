@@ -1,5 +1,3 @@
-import 'package:ffi_flutter_example/pages/opencv/filter/ui/filter_category_page.dart';
-import 'package:ffi_flutter_example/pages/opencv/filter/ui/filter_page.dart';
 import 'package:ffi_flutter_example/pages/opencv/gallery/bloc/gallery_bloc.dart';
 import 'package:ffi_flutter_example/pages/opencv/gallery/model/gallery_asset.dart';
 import 'package:ffi_flutter_example/pages/opencv/memory_filter/ui/memory_filter_page.dart';
@@ -7,7 +5,6 @@ import 'package:ffi_flutter_example/widgets/loading_indicator.dart';
 import 'package:ffi_flutter_example/widgets/scroll_tab_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({Key? key}) : super(key: key);
@@ -33,8 +30,16 @@ class _GalleryPageState extends State<GalleryPage> {
           GalleryLoaded(),
         ),
       child: Scaffold(
+        backgroundColor: Colors.black,
         appBar: AppBar(
-          title: const Text('Image selection page'),
+          backgroundColor: Colors.black,
+          leading: const SizedBox(),
+          centerTitle: false,
+          leadingWidth: 0,
+          title: const Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text('Image selection page'),
+          ),
         ),
         body: _buildBody(),
       ),
@@ -71,6 +76,7 @@ class _GalleryPageState extends State<GalleryPage> {
         return SafeArea(
           child: Column(
             children: [
+              const SizedBox(height: 10),
               _buildTabs(state.data, context),
               Expanded(
                 child: _buildPageView(state.data, context),
@@ -97,25 +103,37 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget _buildGalleryPage(
       List<GalleryAsset>? assets, String galleryName, BuildContext context) {
     if (assets != null) {
-      return SingleChildScrollView(
-        child: Wrap(
-          children: assets
-              .map(
-                (asset) => InkWell(
-                  onTap: () {
-                    BlocProvider.of<GalleryBloc>(context).add(GalleryAssetLoaded(
-                      asset: asset,
-                      galleryName: galleryName,
-                    ));
-                  },
-                  child: Image.memory(
-                    asset.bytes,
-                    width: MediaQuery.of(context).size.width / 3,
-                    fit: BoxFit.cover,
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: SingleChildScrollView(
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: assets
+                .map(
+                  (asset) => InkWell(
+                    onTap: () {
+                      BlocProvider.of<GalleryBloc>(context)
+                          .add(GalleryAssetLoaded(
+                        asset: asset,
+                        galleryName: galleryName,
+                      ));
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(3),
+                      child: SizedBox(
+                        width: (MediaQuery.of(context).size.width - 60) / 3,
+                        height: (MediaQuery.of(context).size.width - 60) / 3,
+                        child: Image.memory(
+                          asset.bytes,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              )
-              .toList(),
+                )
+                .toList(),
+          ),
         ),
       );
     }
@@ -131,6 +149,8 @@ class _GalleryPageState extends State<GalleryPage> {
         height: 40,
         child: ScrollTabViewHeader<String>(
           objects: tabs,
+          spaceBetweenItem: 10,
+          showUnderLine: false,
           defaultIndex: data.currentPage,
           padding: EdgeInsets.zero,
           onSelectedChange: (String value) {
@@ -141,16 +161,40 @@ class _GalleryPageState extends State<GalleryPage> {
           },
           headerBuilder:
               (BuildContext context, bool isSelected, String object) {
-            return Text(
-              object,
-              style: Theme.of(context).textTheme.headline6?.copyWith(
-                    color: isSelected
-                        ? Theme.of(context).primaryColor
-                        : Theme.of(context).hintColor,
-                    fontWeight: FontWeight.w700,
-                  ),
-            );
+            return _buildTab(title: object, isSelected: isSelected);
+            // return Text(
+            //   object,
+            //   style: Theme.of(context).textTheme.headline6?.copyWith(
+            //         color: isSelected
+            //             ? Theme.of(context).primaryColor
+            //             : Theme.of(context).hintColor,
+            //         fontWeight: FontWeight.w700,
+            //       ),
+            // );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTab({required String title, required bool isSelected}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0xff005FF9) : Colors.black,
+        border: Border.all(
+          color: isSelected
+              ? const Color(0xff005FF9)
+              : Colors.white.withOpacity(0.2),
+        ),
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w400,
+          fontSize: 14,
         ),
       ),
     );

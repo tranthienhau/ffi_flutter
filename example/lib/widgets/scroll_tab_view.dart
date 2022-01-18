@@ -19,6 +19,7 @@ class ScrollTabViewHeader<T> extends StatefulWidget {
     this.defaultIndex = 0,
     this.padding = const EdgeInsets.only(left: 5, right: 5),
     this.headerBuilder,
+    this.showUnderLine = true,
     this.spaceBetweenItem = 20,
   }) : super(key: key);
 
@@ -29,6 +30,7 @@ class ScrollTabViewHeader<T> extends StatefulWidget {
   final Function(T object)? onSelectedChange;
   final MainAxisAlignment? mainAxisAlignment;
   final Color? underLineColor;
+  final bool showUnderLine;
   final int defaultIndex;
   final EdgeInsets padding;
   final _HeaderBuilder<T>? headerBuilder;
@@ -98,7 +100,7 @@ class _ScrollTabViewHeaderState<T> extends State<ScrollTabViewHeader<T>> {
             )
           : Container(
               padding: widget.padding,
-              decoration: BoxDecoration(
+              decoration: widget.showUnderLine ? BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
                     width: 4,
@@ -108,7 +110,7 @@ class _ScrollTabViewHeaderState<T> extends State<ScrollTabViewHeader<T>> {
                         : Colors.transparent,
                   ),
                 ),
-              ),
+              ): null,
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: widget.headerBuilder!(

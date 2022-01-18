@@ -28,13 +28,14 @@ class MemoryFilterColorFiltered extends MemoryFilterEvent {
   MemoryFilterColorFiltered(this.filter);
 }
 
-
 class MemoryFilterTransferFiltered extends MemoryFilterEvent {
   // final String stylePath;
   final int index;
 
   MemoryFilterTransferFiltered(this.index);
 }
+
+class MemoryFilterShared extends MemoryFilterEvent {}
 
 class MemoryFilterTransferFilterCompleted extends MemoryFilterEvent {
   final Uint8List bytes;

@@ -12,7 +12,7 @@ class ToastUtils {
         title: title,
         leading: const Icon(
           FontAwesomeIcons.solidCheckCircle,
-          color: Colors.green,
+          color: Colors.white,
         ),
       ),
       background: Colors.transparent,

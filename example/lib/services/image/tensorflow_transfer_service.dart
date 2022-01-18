@@ -8,14 +8,14 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 class TensorflowTransferService implements ImageTransferService {
   final _predictionModelFile = 'models/prediction_model.tflite';
-  final _newTransferModelFile = 'models/converted_model_512.tflite';
+  final _newTransferModelFile = 'models/converted_model_400.tflite';
   final _transformModelFile = 'models/transfer_model.tflite';
 
   static const int MODEL_TRANSFER_IMAGE_SIZE = 384;
   static const int MODEL_PREDICTION_IMAGE_SIZE = 256;
   static const int MODEL_PREDICTION_BLEND_SIZE = 256;
 
-  static const int MODEL_NEW_STYLE_SIZE = 512;
+  static const int MODEL_NEW_STYLE_SIZE = 400;
 
   late Interpreter interpreterPrediction;
   late Interpreter newInterpreterTransfer;

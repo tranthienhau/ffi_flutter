@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:async/async.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:synchronized/synchronized.dart';
 
 part 'memory_filter_event.dart';
@@ -27,6 +30,7 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
     on<MemoryFilterTransferFiltered>(_onTransferFiltered);
     on<MemoryFilterTransferFilterCompleted>(_onFilterCompleted);
     on<MemoryFilterImageSaved>(_onImageSaved);
+    on<MemoryFilterShared>(_onShared);
   }
 
   final NativeImageFilter _thumbnaiProcessFilter = NativeImageFilter();
@@ -39,6 +43,44 @@ class MemoryFilterBloc extends Bloc<MemoryFilterEvent, MemoryFilterState> {
 
   final processTensorflowLock = Lock();
   final lock = Lock();
+
+  Future<void> _onShared(
+      MemoryFilterShared event, Emitter<MemoryFilterState> emit) async {
+    final data = state.data;
+    if (data != null) {
+      try {
+        emit(MemoryFilterBusy(data));
+        final transferImage = data.transferImage;
+        if (transferImage != null) {
+          final now = DateTime.now();
+
+          Directory? dir = Platform.isAndroid
+              ? await getExternalStorageDirectory()
+              : await getApplicationDocumentsDirectory();
+
+          if (dir != null) {
+            final filePath =
+                '${dir.path}/ffi_flutter/filter_${now.millisecondsSinceEpoch}.png';
+            File shareFile = File(filePath);
+            if (!await shareFile.exists()) {
+              await shareFile.create(recursive: true);
+              shareFile.writeAsBytesSync(transferImage);
+
+              Share.shareFiles([filePath], text: 'Filter picture');
+            }
+
+            emit(MemoryFilterImageShareSuccess(data));
+            return;
+          }
+
+          throw Exception('Can not share file');
+        }
+        throw Exception('Please choose filter first!');
+      } catch (e, _) {
+        emit(MemoryFilterImageSaveFailure(data, e.toString()));
+      }
+    }
+  }
 
   Future<void> _onImageSaved(
       MemoryFilterImageSaved event, Emitter<MemoryFilterState> emit) async {

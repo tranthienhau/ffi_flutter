@@ -24,17 +24,15 @@ class TransferFilterTab extends StatelessWidget {
 
           child = Image.memory(
             originImage,
-
             gaplessPlayback: true,
-            fit: BoxFit.fitWidth,
+            fit: BoxFit.cover,
           );
 
           if (transferImage != null) {
             child = Image.memory(
               transferImage,
-
               gaplessPlayback: true,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.cover,
             );
           }
 
@@ -42,19 +40,33 @@ class TransferFilterTab extends StatelessWidget {
             children: [
               Column(
                 children: [
+                  const SizedBox(height: 10),
                   Expanded(
                     child: Stack(
                       children: [
-                        Center(child: child),
-                        if(state is MemoryFilterTransferFilterBusy)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Center(
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: child,
+                            ),
+                          ),
+                        ),
+                        if (state is MemoryFilterTransferFilterBusy)
                           const LoadingIndicator()
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 80),
+                  Divider(
+                    height: 1,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                  const SizedBox(height: 15),
                   SizedBox(
-                    height: 80,
-                    child: ListView.builder(
+                    height: 70,
+                    child: ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
@@ -67,29 +79,40 @@ class TransferFilterTab extends StatelessWidget {
                                 .add(MemoryFilterTransferFiltered(index));
                           },
                           child: Container(
-                            width: 100,
-                            height: 100,
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            width: 70,
+                            height: 70,
                             decoration: BoxDecoration(
                               border: transferFilterData.selectedIndex == index
                                   ? Border.all(
-                                      color: Colors.yellow,
+                                      color: Colors.white,
                                       width: 2,
                                     )
                                   : null,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(100),
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(imagePath, fit: BoxFit.cover,),
+                            child: Center(
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Image.asset(
+                                    imagePath,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         );
                       },
                       itemCount: transferFilterData.transferFilterList.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const SizedBox(width: 10);
+                      },
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                 ],
               ),
               // Center(

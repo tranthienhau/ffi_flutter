@@ -18,21 +18,21 @@ class MessageNotification extends StatelessWidget {
       titleWidget = Text(
         subTitle ?? '',
         style: const TextStyle(
-          color: Colors.grey,
+          color: Colors.white,
         ),
       );
     }else{
       titleWidget = Text(
         title ?? '',
         style: const TextStyle(
-          color: Colors.grey,
+          color: Colors.white,
         ),
       );
 
       subtitleWidget = Text(
         subTitle ?? '',
         style: const TextStyle(
-          color: Colors.grey,
+          color: Colors.white,
         ),
       );
 
@@ -41,6 +41,7 @@ class MessageNotification extends StatelessWidget {
 
 
     return Card(
+      color: const Color(0xff005FF9),
       margin: const EdgeInsets.symmetric(horizontal: 4),
       elevation: 5,
       child: SafeArea(

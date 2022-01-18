@@ -25,12 +25,14 @@ class ColorFilterTab extends StatelessWidget {
           child = Image.memory(
             originImage,
             gaplessPlayback: true,
+            fit: BoxFit.cover,
           );
 
           if (transferImage != null) {
             child = Image.memory(
               transferImage,
               gaplessPlayback: true,
+              fit: BoxFit.cover,
             );
           }
 
@@ -38,13 +40,33 @@ class ColorFilterTab extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Expanded(
-                    child: child,
-                  ),
                   const SizedBox(height: 10),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Center(
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: child,
+                            ),
+                          ),
+                        ),
+                        if (state is MemoryFilterTransferFilterBusy)
+                          const LoadingIndicator()
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 80),
+                  Divider(
+                    height: 1,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                  const SizedBox(height: 15),
                   SizedBox(
-                    height: 80,
-                    child: ListView.builder(
+                    height: 70,
+                    child: ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
@@ -53,7 +75,6 @@ class ColorFilterTab extends StatelessWidget {
 
                         if (imageBytes == null) {
                           return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
                               border: colorFilterData.selectedIndex == index
                                   ? Border.all(
@@ -61,7 +82,7 @@ class ColorFilterTab extends StatelessWidget {
                                       width: 2,
                                     )
                                   : null,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(100),
                             ),
                             child: const LoadingIndicator(),
                           );
@@ -74,37 +95,41 @@ class ColorFilterTab extends StatelessWidget {
                                   .colorFilterList[index].filter),
                             );
                           },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              width: 80,
-                              height: 80,
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              decoration: BoxDecoration(
-                                border: colorFilterData.selectedIndex == index
-                                    ? Border.all(
-                                        color: Colors.yellow,
-                                        width: 2,
-                                      )
-                                    : null,
-                                image: DecorationImage(
-                                  image: MemoryImage(imageBytes),
-                                  fit: BoxFit.cover,
+                          child: Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              border: colorFilterData.selectedIndex == index
+                                  ? Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    )
+                                  : null,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Center(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: Image.memory(
+                                    imageBytes,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                borderRadius: BorderRadius.circular(20),
                               ),
-                              // child: Image.memory(
-                              //   imageBytes,
-                              //   fit: BoxFit.cover,
-                              // ),
                             ),
                           ),
                         );
                       },
                       itemCount: colorFilterData.colorFilterList.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const SizedBox(width: 10);
+                      },
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                 ],
               ),
               // Center(

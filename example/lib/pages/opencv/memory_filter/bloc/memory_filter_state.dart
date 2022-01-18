@@ -153,6 +153,11 @@ class MemoryFilterImageSaveSuccess extends MemoryFilterState {
   const MemoryFilterImageSaveSuccess(MemoryFilterData data) : super(data);
 }
 
+class MemoryFilterImageShareSuccess extends MemoryFilterState {
+  const MemoryFilterImageShareSuccess(MemoryFilterData data) : super(data);
+}
+
+
 class MemoryFilterImageSaveFailure extends MemoryFilterState {
   const MemoryFilterImageSaveFailure(MemoryFilterData data, this.error) : super(data);
 
