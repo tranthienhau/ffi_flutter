@@ -1,7 +1,10 @@
+import 'package:ffi_flutter_example/pages/intro/bloc/introduce_bloc.dart';
 import 'package:ffi_flutter_example/pages/opencv/gallery/ui/gallery_page.dart';
 import 'package:ffi_flutter_example/pages/opencv/memory_filter/ui/memory_filter_page.dart';
 import 'package:ffi_flutter_example/widgets/app_button.dart';
+import 'package:ffi_flutter_example/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,6 +18,14 @@ class IntroducePage extends StatefulWidget {
 class _IntroducePageState extends State<IntroducePage> {
   final ImagePicker _picker = ImagePicker();
 
+  final IntroduceBloc _introduceBloc = IntroduceBloc();
+
+  @override
+  void dispose() {
+    _introduceBloc.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +35,36 @@ class _IntroducePageState extends State<IntroducePage> {
   }
 
   Widget _buildBody() {
-    return Stack(
-      children: [
-        _buildImageBackground(),
-        _buildGradientBackground1(),
-        _buildGradientBackground1(),
-        _buildContent(),
-      ],
+    return BlocConsumer<IntroduceBloc, IntroduceState>(
+      bloc: _introduceBloc,
+      listener: (context, state) {
+        if (state is IntroduceCameraCaptureSuccess) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return MemoryFilterPage(
+                  imagePath: state.imagePath,
+                  thumnail: state.thumbnail,
+                );
+              },
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Stack(
+          children: [
+            _buildImageBackground(),
+            _buildGradientBackground1(),
+            _buildGradientBackground1(),
+            _buildContent(),
+            if (state is IntroduceBusy)
+              const Center(
+                child: LoadingIndicator(),
+              )
+          ],
+        );
+      },
     );
   }
 
@@ -153,18 +187,9 @@ class _IntroducePageState extends State<IntroducePage> {
             final XFile? photo =
                 await _picker.pickImage(source: ImageSource.camera);
             if (photo != null) {
-              final bytes = await photo.readAsBytes();
+              // final bytes = await photo.readAsBytes();
 
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return MemoryFilterPage(
-                      imagePath: photo.path,
-                      thumnail: bytes,
-                    );
-                  },
-                ),
-              );
+              _introduceBloc.add(IntroduceCameraCaptured(photo));
             }
           },
           child: Row(

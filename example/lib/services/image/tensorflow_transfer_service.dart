@@ -62,7 +62,6 @@ class TensorflowTransferService implements ImageTransferService {
     // newInterpreterTransfer.close();
   }
 
-  @override
   Future<void> selectStyle(Uint8List styleData) async {
     ///Load model
     final options = InterpreterOptions();
