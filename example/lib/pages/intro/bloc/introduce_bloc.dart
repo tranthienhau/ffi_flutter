@@ -71,6 +71,6 @@ void decodeIsolate(DecodeParam param) {
   // decoder.
   final image = decodeImage(param.file.readAsBytesSync())!;
   // Resize the image to a 120x? thumbnail (maintaining the aspect ratio).
-  final thumbnail = copyResize(image, width: param.size, height: param.size);
+  final thumbnail = copyResize(image, width: param.size);
   param.sendPort.send(thumbnail);
 }
